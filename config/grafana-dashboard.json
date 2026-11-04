@@ -1,0 +1,82 @@
+{
+  "title": "Homelab-Drift",
+  "uid": "homelab-drift",
+  "tags": ["homelab", "drift"],
+  "timezone": "browser",
+  "schemaVersion": 39,
+  "version": 1,
+  "refresh": "5m",
+  "time": {"from": "now-7d", "to": "now"},
+  "templating": {
+    "list": [
+      {"name": "datasource", "label": "Prometheus", "type": "datasource", "query": "prometheus", "current": {}, "hide": 0}
+    ]
+  },
+  "panels": [
+    {
+      "type": "stat", "title": "Last scan", "gridPos": {"x": 0, "y": 0, "w": 6, "h": 5},
+      "datasource": {"type": "prometheus", "uid": "${datasource}"},
+      "targets": [{"expr": "time() - homelab_drift_last_scan_timestamp_seconds", "refId": "A"}],
+      "fieldConfig": {"defaults": {"unit": "s", "thresholds": {"mode": "absolute", "steps": [
+        {"color": "green", "value": null}, {"color": "orange", "value": 2700}, {"color": "red", "value": 4500}]}}, "overrides": []},
+      "options": {"colorMode": "background", "graphMode": "none", "reduceOptions": {"calcs": ["lastNotNull"]}}
+    },
+    {
+      "type": "stat", "title": "Open findings", "gridPos": {"x": 6, "y": 0, "w": 6, "h": 5},
+      "datasource": {"type": "prometheus", "uid": "${datasource}"},
+      "targets": [{"expr": "sum(homelab_drift_findings{status=\"open\"})", "refId": "A"}],
+      "fieldConfig": {"defaults": {"thresholds": {"mode": "absolute", "steps": [
+        {"color": "green", "value": null}, {"color": "orange", "value": 1}]}}, "overrides": []},
+      "options": {"colorMode": "background", "graphMode": "none", "reduceOptions": {"calcs": ["lastNotNull"]}}
+    },
+    {
+      "type": "stat", "title": "Scan healthy", "gridPos": {"x": 12, "y": 0, "w": 6, "h": 5},
+      "datasource": {"type": "prometheus", "uid": "${datasource}"},
+      "targets": [{"expr": "homelab_drift_scan_ok", "refId": "A"}],
+      "fieldConfig": {"defaults": {"mappings": [{"type": "value", "options": {"0": {"text": "problem", "color": "red"}, "1": {"text": "OK", "color": "green"}}}]}, "overrides": []},
+      "options": {"colorMode": "background", "graphMode": "none", "reduceOptions": {"calcs": ["lastNotNull"]}}
+    },
+    {
+      "type": "stat", "title": "Undelivered notifications", "gridPos": {"x": 18, "y": 0, "w": 6, "h": 5},
+      "datasource": {"type": "prometheus", "uid": "${datasource}"},
+      "targets": [{"expr": "homelab_drift_outbox_messages", "refId": "A"}],
+      "fieldConfig": {"defaults": {"thresholds": {"mode": "absolute", "steps": [
+        {"color": "green", "value": null}, {"color": "red", "value": 1}]}}, "overrides": []},
+      "options": {"colorMode": "background", "graphMode": "none", "reduceOptions": {"calcs": ["lastNotNull"]}}
+    },
+    {
+      "type": "table", "title": "Collectors per host", "gridPos": {"x": 0, "y": 5, "w": 12, "h": 10},
+      "datasource": {"type": "prometheus", "uid": "${datasource}"},
+      "targets": [
+        {"expr": "homelab_drift_collector_up", "format": "table", "instant": true, "refId": "A"},
+        {"expr": "homelab_drift_collector_items", "format": "table", "instant": true, "refId": "B"}
+      ],
+      "transformations": [
+        {"id": "merge", "options": {}},
+        {"id": "organize", "options": {"excludeByName": {"Time": true, "__name__": true, "instance": true, "job": true},
+          "renameByName": {"Value #A": "OK", "Value #B": "Items", "host": "Host", "collector": "Collector"}}}
+      ]
+    },
+    {
+      "type": "timeseries", "title": "Findings over time", "gridPos": {"x": 12, "y": 5, "w": 12, "h": 10},
+      "datasource": {"type": "prometheus", "uid": "${datasource}"},
+      "targets": [
+        {"expr": "sum by (severity) (homelab_drift_findings{status=\"open\"})", "legendFormat": "open {{severity}}", "refId": "A"},
+        {"expr": "homelab_drift_pending_observations", "legendFormat": "pending", "refId": "B"}
+      ],
+      "fieldConfig": {"defaults": {"custom": {"drawStyle": "line", "lineInterpolation": "stepAfter"}}, "overrides": []}
+    },
+    {
+      "type": "timeseries", "title": "Scan duration", "gridPos": {"x": 0, "y": 15, "w": 12, "h": 8},
+      "datasource": {"type": "prometheus", "uid": "${datasource}"},
+      "targets": [{"expr": "homelab_drift_scan_duration_seconds", "legendFormat": "duration", "refId": "A"}],
+      "fieldConfig": {"defaults": {"unit": "s"}, "overrides": []}
+    },
+    {
+      "type": "state-timeline", "title": "Hosts reachable", "gridPos": {"x": 12, "y": 15, "w": 12, "h": 8},
+      "datasource": {"type": "prometheus", "uid": "${datasource}"},
+      "targets": [{"expr": "homelab_drift_host_reachable", "legendFormat": "{{host}}", "refId": "A"}],
+      "fieldConfig": {"defaults": {"mappings": [{"type": "value", "options": {"0": {"text": "down", "color": "red"}, "1": {"text": "ok", "color": "green"}}}]}, "overrides": []}
+    }
+  ]
+}

@@ -1,0 +1,34 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "homelab-drift"
+version = "1.0.0"
+description = "Generates homelab documentation from the real system state and reports drift."
+readme = "README.md"
+requires-python = ">=3.11"
+license = "MIT"
+license-files = ["LICENSE"]
+dependencies = [
+    "pyyaml>=6.0",
+    "jinja2>=3.1",
+    "requests>=2.31",
+]
+
+[project.optional-dependencies]
+test = ["pytest>=8"]
+
+[project.scripts]
+homelab-drift = "homelab_drift.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["homelab_drift*"]
+
+[tool.setuptools.package-data]
+homelab_drift = ["templates/*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = ["e2e: End-to-End-Test gegen einen echten SSH-Testhost (braucht Docker, siehe tests/e2e)"]
+addopts = "-m 'not e2e'"

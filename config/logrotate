@@ -1,0 +1,10 @@
+/var/log/homelab-drift/*.log {
+    daily
+    rotate 14
+    compress
+    delaycompress
+    missingok
+    notifempty
+    su homelab-drift homelab-drift
+    create 0640 homelab-drift homelab-drift
+}

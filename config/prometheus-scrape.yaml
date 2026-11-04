@@ -1,0 +1,5 @@
+  # Homelab-Drift (metrics as a static file served by nginx)
+  - job_name: homelab_drift
+    metrics_path: /metrics
+    static_configs:
+      - targets: ['localhost:8097']

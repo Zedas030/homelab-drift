@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}Changelog – {{ cfg.title }}{% endblock %}
+{% block body %}
+<h1>Changelog</h1>
+<p class="sub">Automatic: every confirmed change (after {{ cfg.confirm_after_scans }} scans), newest first. Short restarts and flapping states do not show up here.</p>
+{% set ns = namespace(day='') %}
+{% for e in changelog %}
+{% set d = e.ts[:10] %}
+{% if d != ns.day %}{% if ns.day %}</table></div>{% endif %}{% set ns.day = d %}
+<h2>{{ d|day }}</h2>
+<div class="box"><table><tr><th style="width:70px">Time</th><th style="width:110px">Host</th><th>Change</th><th class="hide-s">Status</th></tr>
+{% endif %}
+<tr><td class="mono">{{ e.ts[11:16] }}</td><td>{{ e.host }}</td>
+<td>{{ e.summary }}{% if e.details %}<div class="muted mono">{{ e.details }}</div>{% endif %}</td>
+<td class="hide-s">{% if e.finding %}<a class="chip" href="index.html#{{ e.finding }}">{{ e.finding }}</a>{% endif %}{% if e.status == 'acknowledged' %} <span class="chip ok">acknowledged</span>{% endif %}</td></tr>
+{% endfor %}
+{% if ns.day %}</table></div>{% else %}<p class="muted">No entries yet.</p>{% endif %}
+
+{% if git_log %}
+<h2>Snapshot versions (git)</h2>
+<div class="box"><table><tr><th>Commit</th><th>Time</th><th>Content</th></tr>
+{% for c in git_log %}<tr><td class="mono">{{ c.hash }}</td><td class="mono">{{ c.date|ts }}</td><td>{{ c.subject }}</td></tr>{% endfor %}
+</table></div>
+<p class="muted">Details: <code>git -C {{ cfg.repo_dir }} show &lt;commit&gt;</code></p>
+{% endif %}
+{% endblock %}

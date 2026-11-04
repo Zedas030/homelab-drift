@@ -1,0 +1,102 @@
+# Homelab-Drift configuration
+# Lives at /etc/homelab-drift/config.yaml on the controller. Changes apply from the next scan on.
+# Exception: scan_interval_minutes and notify.digest_time are part of the systemd timers -
+# after changing them run `sudo /opt/homelab-drift/app/scripts/install.sh --schedule`.
+# Secrets (tokens, passwords) do NOT belong here but in /etc/homelab-drift/.env (see env.example).
+
+general:
+  title: "Homelab-Drift"
+  # Address of the generated documentation; linked from every notification.
+  base_url: "http://pi.example.local:8097/"
+  # Working directory: snapshots (git repo), state, generated pages, SSH key
+  state_dir: /var/lib/homelab-drift
+  # Your notes. The tool only reads this file and never writes to it.
+  annotations: /etc/homelab-drift/annotations.yaml
+  secrets_file: /etc/homelab-drift/.env
+  # How often to scan (minutes). Part of the timer - run install.sh --schedule after changing it.
+  scan_interval_minutes: 15
+  # Version every snapshot in a local git repository
+  git: true
+  # Maintenance windows: skip scans while one of these systemd units is active on the controller, e.g. a full-system
+  # backup that stops Docker on purpose. Skipped scans raise no alerts and do not count as "not scanning".
+  pause_while_active: []
+  # pause_while_active: ["raspiBackup.service"]
+
+ssh:
+  # User on the monitored hosts. Its forced command only allows the read-only gate.
+  user: drift
+  key: /var/lib/homelab-drift/.ssh/id_ed25519
+  # Host keys are remembered on first contact. If one changes later, the connection fails and you get a
+  # "host unreachable" alert.
+  known_hosts: /var/lib/homelab-drift/.ssh/known_hosts
+  connect_timeout: 10
+  command_timeout: 60
+
+# Monitored hosts. The controller itself is reached via 127.0.0.1 - over SSH like every other host.
+# Adding a host:
+#   1. On the new host:  sudo ./scripts/install-host.sh "<contents of /var/lib/homelab-drift/.ssh/id_ed25519.pub>"
+#   2. Add an entry below
+#   3. Verify:           sudo homelab-drift check
+hosts:
+  - name: pi
+    address: 127.0.0.1
+    description: "Raspberry Pi - Home Assistant, Grafana, Prometheus, Pi-hole, nginx"
+    # collectors: [system, docker, ports, nginx, cron, systemd, storage, tailscale]   # default: all
+
+  # - name: server
+  #   address: 192.0.2.50
+  #   description: "Small form factor server"
+
+  # Optional: device list of an AVM FRITZ!Box via TR-064 (needs FRITZ_USER/FRITZ_PASSWORD in .env)
+  # - name: fritzbox
+  #   type: fritzbox
+  #   address: 192.0.2.1
+  #   port: 49000
+
+drift:
+  # A difference only counts once it persists for this many scans in a row.
+  # Short restarts and flapping states are filtered out. 3 scans at 15 min = 45 min.
+  confirm_after_scans: 3
+  # "Host unreachable" after this many failed connections in a row
+  unreachable_after_scans: 2
+  # Mount usage thresholds: a mount is considered "full" or "critical" from here on (percent)
+  storage_warn_percent: 85
+  storage_crit_percent: 95
+  # Things that are not collected at all (shell patterns with * and ?)
+  ignore:
+    # throw-away containers of other tools, e.g. a backup restore sandbox
+    containers: ["rp-*"]
+    # systemd units: system internals that need no documentation
+    units: ["systemd-*", "user@*", "user-runtime-dir@*", "getty@*", "serial-getty@*", "session-*", "run-*",
+            "dbus*", "modprobe@*", "kmod-static-nodes.service", "plymouth*", "initrd*"]
+    # ports as proto/port, e.g. "udp/5353"; ephemeral ports are called proto/eph/<process>
+    ports: []
+    mounts: []
+    # cron jobs: pattern on the command or the ID
+    cron: []
+    tailscale_peers: []
+    fritz_devices: []
+
+notify:
+  enabled: true
+  # Home Assistant notify service (domain.service)
+  service: notify.mobile_app_phone
+  # Instant alert for undocumented and security-relevant changes (new open port, new root cron job/timer,
+  # privileged container, host down, broken collector). Everything else goes into the daily digest.
+  instant: true
+  # Time of the daily digest. Part of the timer - run install.sh --schedule after changing it.
+  digest_time: "19:00"
+  # Also send a digest when nothing happened
+  digest_when_empty: false
+
+homeassistant:
+  url: "http://127.0.0.1:8123"
+  # Name of the variable in .env that holds the long-lived access token
+  token_env: HA_TOKEN
+  # Status sensor set after every scan (state: ok | drift | error)
+  sensor: sensor.homelab_drift
+  verify_tls: true
+
+fritzbox:
+  user_env: FRITZ_USER
+  password_env: FRITZ_PASSWORD

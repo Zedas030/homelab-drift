@@ -1,0 +1,45 @@
+# Home Assistant: dead man's switch for Homelab-Drift
+# Created by scripts/ha_setup.py via the REST API (id homelab_drift_dead_mans_switch); the notify service and the
+# sensor are taken from config.yaml.
+# Alerts when sensor.homelab_drift has not been updated for 75 minutes: scan timer dead, service broken, token invalid.
+# This is the only watchdog that does not depend on the tool itself.
+# After a Home Assistant restart the sensor is missing until the next scan; if it has not shown up 30 minutes after
+# the start, that is reported as well.
+alias: "Homelab-Drift: dead man's switch"
+description: "Alerts when Homelab-Drift stops scanning (sensor.homelab_drift is stale)."
+mode: single
+triggers:
+  - trigger: state
+    entity_id: sensor.homelab_drift
+    attribute: last_scan
+    for: "01:15:00"
+    id: stale
+  - trigger: homeassistant
+    event: start
+    id: start
+conditions: []
+actions:
+  - choose:
+      - conditions:
+          - condition: trigger
+            id: start
+        sequence:
+          - wait_template: "{{ states('sensor.homelab_drift') not in ['unknown', 'unavailable'] }}"
+            timeout: "00:30:00"
+            continue_on_timeout: true
+          - condition: template
+            value_template: "{{ not wait.completed }}"
+          - action: notify.mobile_app_phone
+            data:
+              title: "Homelab-Drift is silent"
+              message: "30 minutes after Home Assistant started, sensor.homelab_drift has not appeared. Check: systemctl status homelab-drift.timer"
+      - conditions:
+          - condition: trigger
+            id: stale
+        sequence:
+          - action: notify.mobile_app_phone
+            data:
+              title: "Homelab-Drift stopped scanning"
+              message: >-
+                Last scan {{ state_attr('sensor.homelab_drift', 'last_scan') }}. Check:
+                systemctl status homelab-drift.timer; journalctl -u homelab-drift -n 50

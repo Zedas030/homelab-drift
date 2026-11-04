@@ -1,0 +1,2432 @@
+### SERVICES
+Type=notify-reload
+ExecStart={ path=/usr/lib/systemd/systemd-udevd ; argv[]=/usr/lib/systemd/systemd-udevd ; ignore_errors=no ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }
+User=
+Id=systemd-udevd.service
+TriggeredBy=systemd-udevd-kernel.socket systemd-udevd-control.socket
+Description=Rule-based Manager for Device Events and Files
+ActiveState=active
+SubState=running
+FragmentPath=/usr/lib/systemd/system/systemd-udevd.service
+UnitFileState=static
+
+Type=oneshot
+ExecStart={ path=/usr/lib/systemd/scripts/rp1_test.sh ; argv[]=/usr/lib/systemd/scripts/rp1_test.sh ; ignore_errors=no ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }
+User=
+Id=rp1-test.service
+TriggeredBy=
+Description=Check for RP1 displays for Xorg
+ActiveState=active
+SubState=exited
+FragmentPath=/usr/lib/systemd/system/rp1-test.service
+UnitFileState=enabled
+
+Type=oneshot
+ExecStart={ path=udevadm ; argv[]=udevadm info --cleanup-db ; ignore_errors=yes ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }
+User=
+Id=initrd-udevadm-cleanup-db.service
+TriggeredBy=
+Description=Cleanup udev Database
+ActiveState=inactive
+SubState=dead
+FragmentPath=/usr/lib/systemd/system/initrd-udevadm-cleanup-db.service
+UnitFileState=static
+
+Type=oneshot
+ExecStart={ path=journalctl ; argv[]=journalctl --flush ; ignore_errors=no ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }
+User=
+Id=systemd-journal-flush.service
+TriggeredBy=
+Description=Flush Journal to Persistent Storage
+ActiveState=active
+SubState=exited
+FragmentPath=/usr/lib/systemd/system/systemd-journal-flush.service
+UnitFileState=static
+
+Type=oneshot
+ExecStart={ path=/usr/lib/systemd/systemd-sysctl ; argv[]=/usr/lib/systemd/systemd-sysctl ; ignore_errors=no ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }
+User=
+Id=systemd-sysctl.service
+TriggeredBy=
+Description=Apply Kernel Variables
+ActiveState=active
+SubState=exited
+FragmentPath=/usr/lib/systemd/system/systemd-sysctl.service
+UnitFileState=static
+
+Type=oneshot
+ExecStart={ path=/usr/lib/systemd/systemd-binfmt ; argv[]=/usr/lib/systemd/systemd-binfmt ; ignore_errors=no ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }
+User=
+Id=systemd-binfmt.service
+TriggeredBy=
+Description=Set Up Additional Binary Formats
+ActiveState=active
+SubState=exited
+FragmentPath=/usr/lib/systemd/system/systemd-binfmt.service
+UnitFileState=static
+
+Type=oneshot
+ExecStart={ path=/usr/local/sbin/orbit-pihole-cert-renew ; argv[]=/usr/local/sbin/orbit-pihole-cert-renew ; ignore_errors=no ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }
+User=
+Id=orbit-pihole-cert.service
+TriggeredBy=orbit-pihole-cert.timer
+Description=ORBIT: renew the Pi-hole certificate when it expires soon
+ActiveState=inactive
+SubState=dead
+FragmentPath=/etc/systemd/system/orbit-pihole-cert.service
+UnitFileState=static
+
+Type=forking
+ExecStart={ path=/usr/sbin/plymouthd ; argv[]=/usr/sbin/plymouthd --mode=reboot --attach-to-session ; ignore_errors=no ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }
+User=
+Id=plymouth-reboot.service
+TriggeredBy=
+Description=Show Plymouth Reboot Screen
+ActiveState=inactive
+SubState=dead
+FragmentPath=/usr/lib/systemd/system/plymouth-reboot.service
+UnitFileState=static
+
+Type=oneshot
+ExecStart={ path=udevadm ; argv[]=udevadm settle ; ignore_errors=no ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }
+User=
+Id=systemd-udev-settle.service
+TriggeredBy=
+Description=Wait for udev To Complete Device Initialization
+ActiveState=inactive
+SubState=dead
+FragmentPath=/usr/lib/systemd/system/systemd-udev-settle.service
+UnitFileState=static
+
+Type=forking
+ExecStart={ path=/usr/sbin/plymouthd ; argv[]=/usr/sbin/plymouthd --mode=shutdown --attach-to-session ; ignore_errors=no ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }
+User=
+Id=plymouth-kexec.service
+TriggeredBy=
+Description=Show Plymouth Reboot with kexec Screen
+ActiveState=inactive
+SubState=dead
+FragmentPath=/usr/lib/systemd/system/plymouth-kexec.service
+UnitFileState=static
+
+Type=oneshot
+ExecStart={ path=/usr/sbin/nvme ; argv[]=/usr/sbin/nvme connect-all --context=autoconnect ; ignore_errors=no ; start_time=[Wed 2026-11-04 22:20:55 CET] ; stop_time=[Wed 2026-11-04 22:20:56 CET] ; pid=1519 ; code=exited ; status=0 }
+User=
+Id=nvmf-autoconnect.service
+TriggeredBy=
+Description=Connect NVMe-oF subsystems automatically during boot
+ActiveState=inactive
+SubState=dead
+FragmentPath=/usr/lib/systemd/system/nvmf-autoconnect.service
+UnitFileState=enabled
+
+Type=oneshot
+ExecStart={ path=/usr/lib/apt/apt.systemd.daily ; argv[]=/usr/lib/apt/apt.systemd.daily update ; ignore_errors=no ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }
+User=
+Id=apt-daily.service
+TriggeredBy=apt-daily.timer
+Description=Daily apt download activities
+ActiveState=inactive
+SubState=dead
+FragmentPath=/usr/lib/systemd/system/apt-daily.service
+UnitFileState=static
+
+Type=simple
+ExecStart={ path=/usr/bin/python3 ; argv[]=/usr/bin/python3 /opt/orbit-monitoring/api.py ; ignore_errors=no ; start_time=[Wed 2026-11-04 22:20:55 CET] ; stop_time=[n/a] ; pid=1520 ; code=(null) ; status=0/0 }
+User=orbit-monitor
+Id=orbit-monitoring-api.service
+TriggeredBy=
+Description=Read-only ORBIT monitoring data proxy
+ActiveState=active
+SubState=running
+FragmentPath=/etc/systemd/system/orbit-monitoring-api.service
+UnitFileState=enabled
+
+Type=oneshot
+ExecStart={ path=/bin/sh ; argv[]=/bin/sh -o pipefail -c /usr/share/prometheus-node-exporter-collectors/smartmon.sh | sponge /var/lib/prometheus/node-exporter/smartmon.prom ; ignore_errors=no ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }
+User=
+Id=prometheus-node-exporter-smartmon.service
+TriggeredBy=prometheus-node-exporter-smartmon.timer
+Description=Collect SMART metrics for prometheus-node-exporter
+ActiveState=inactive
+SubState=dead
+FragmentPath=/usr/lib/systemd/system/prometheus-node-exporter-smartmon.service
+UnitFileState=static
+
+Type=forking
+ExecStart={ path=/usr/sbin/rpc.gssd ; argv[]=/usr/sbin/rpc.gssd ; ignore_errors=no ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }
+User=
+Id=rpc-gssd.service
+TriggeredBy=
+Description=RPC security service for NFS client and server
+ActiveState=inactive
+SubState=dead
+FragmentPath=/usr/lib/systemd/system/rpc-gssd.service
+UnitFileState=static
+
+Type=notify
+ExecStart={ path=/bin/sh ; argv[]=/bin/sh /usr/sbin/wayvnc-run.sh ; ignore_errors=no ; start_time=[Wed 2026-11-04 22:20:48 CET] ; stop_time=[n/a] ; pid=1209 ; code=(null) ; status=0/0 }
+User=vnc
+Id=wayvnc.service
+TriggeredBy=
+Description=VNC Server
+ActiveState=active
+SubState=running
+FragmentPath=/usr/lib/systemd/system/wayvnc.service
+UnitFileState=enabled
+
+Type=simple
+ExecStart={ path=/usr/sbin/cups-browsed ; argv[]=/usr/sbin/cups-browsed ; ignore_errors=no ; start_time=[Wed 2026-11-04 22:20:55 CET] ; stop_time=[n/a] ; pid=1513 ; code=(null) ; status=0/0 }
+User=
+Id=cups-browsed.service
+TriggeredBy=
+Description=Make remote CUPS printers available locally
+ActiveState=active
+SubState=running
+FragmentPath=/usr/lib/systemd/system/cups-browsed.service
+UnitFileState=enabled
+
+Type=oneshot
+User=
+Id=systemd-reboot.service
+TriggeredBy=
+Description=System Reboot
+ActiveState=inactive
+SubState=dead
+FragmentPath=/usr/lib/systemd/system/systemd-reboot.service
+UnitFileState=static
+
+Type=
+User=
+Id=auditd.service
+TriggeredBy=
+Description=auditd.service
+ActiveState=inactive
+SubState=dead
+FragmentPath=
+UnitFileState=
+
+Type=dbus
+ExecStart={ path=/usr/libexec/bluetooth/bluetoothd ; argv[]=/usr/libexec/bluetooth/bluetoothd ; ignore_errors=no ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }
+User=
+Id=bluetooth.service
+TriggeredBy=
+Description=Bluetooth service
+ActiveState=active
+SubState=running
+FragmentPath=/usr/lib/systemd/system/bluetooth.service
+UnitFileState=enabled
+
+Type=oneshot
+ExecStart={ path=/bin/sh ; argv[]=/bin/sh -o pipefail -c /usr/share/prometheus-node-exporter-collectors/mellanox_hca_temp | sponge /var/lib/prometheus/node-exporter/mellanox_hca_temp.prom ; ignore_errors=no ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }
+User=
+Id=prometheus-node-exporter-mellanox-hca-temp.service
+TriggeredBy=prometheus-node-exporter-mellanox-hca-temp.timer
+Description=Collect Mellanox HCA temperatures for prometheus-node-exporter
+ActiveState=inactive
+SubState=dead
+FragmentPath=/usr/lib/systemd/system/prometheus-node-exporter-mellanox-hca-temp.service
+UnitFileState=static
+
+Type=oneshot
+ExecStart={ path=sh ; argv[]=sh -c echo "start" | nc -Uu -W1 /run/cloud-init/share/local.sock -s /run/cloud-init/share/local-return.sock | sh ; ignore_errors=no ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }
+User=
+Id=cloud-init-local.service
+TriggeredBy=
+Description=Cloud-init: Local Stage (pre-network)
+ActiveState=active
+SubState=exited
+FragmentPath=/usr/lib/systemd/system/cloud-init-local.service
+UnitFileState=enabled
+
+Type=
+User=
+Id=ipset.service
+TriggeredBy=
+Description=ipset.service
+ActiveState=inactive
+SubState=dead
+FragmentPath=
+UnitFileState=
+
+Type=oneshot
+ExecStart={ path=systemctl ; argv[]=systemctl --no-block start getty@tty2.service getty@tty3.service getty@tty4.service getty@tty5.service getty@tty6.service ; ignore_errors=no ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }
+User=
+Id=getty-static.service
+TriggeredBy=
+Description=getty on tty2-tty6 if dbus and logind are not available
+ActiveState=inactive
+SubState=dead
+FragmentPath=/usr/lib/systemd/system/getty-static.service
+UnitFileState=static
+
+Type=simple
+ExecStart={ path=/usr/local/bin/raspiBackup.sh ; argv[]=/usr/local/bin/raspiBackup.sh ; ignore_errors=no ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }
+User=
+Id=raspiBackup.service
+TriggeredBy=raspiBackup.timer
+Description=Creation of a Raspberry backup with raspiBackup
+ActiveState=inactive
+SubState=dead
+FragmentPath=/etc/systemd/system/raspiBackup.service
+UnitFileState=disabled
+
+Type=
+User=
+Id=ip6tables.service
+TriggeredBy=
+Description=ip6tables.service
+ActiveState=inactive
+SubState=dead
+FragmentPath=
+UnitFileState=
+
+Type=simple
+ExecStart={ path=/usr/sbin/cron ; argv[]=/usr/sbin/cron -f $EXTRA_OPTS ; ignore_errors=no ; start_time=[Wed 2026-11-04 22:20:56 CET] ; stop_time=[n/a] ; pid=1539 ; code=(null) ; status=0/0 }
+User=
+Id=cron.service
+TriggeredBy=
+Description=Regular background program processing daemon
+ActiveState=active
+SubState=running
+FragmentPath=/usr/lib/systemd/system/cron.service
+UnitFileState=enabled
+
+Type=oneshot
+ExecStart={ path=/usr/lib/systemd/system-generators/zram-generator ; argv[]=/usr/lib/systemd/system-generators/zram-generator --setup-device zram0 ; ignore_errors=no ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }
+User=
+Id=systemd-zram-setup@zram0.service
+TriggeredBy=
+Description=Create swap on /dev/zram0
+ActiveState=active
+SubState=exited
+FragmentPath=/usr/lib/systemd/system/systemd-zram-setup@.service
+UnitFileState=static
+
+Type=oneshot
+ExecStart={ path=/opt/restore-probe/venv/bin/restore-probe ; argv[]=/opt/restore-probe/venv/bin/restore-probe run ; ignore_errors=no ; start_time=[Wed 2026-11-04 22:22:31 CET] ; stop_time=[n/a] ; pid=4425 ; code=(null) ; status=0/0 }
+User=
+Id=restore-probe.service
+TriggeredBy=restore-probe.timer
+Description=Restore Probe: restore backups and verify them in the sandbox
+ActiveState=activating
+SubState=start
+FragmentPath=/etc/systemd/system/restore-probe.service
+UnitFileState=disabled
+
+Type=simple
+ExecStart={ path=/usr/sbin/sshd ; argv[]=/usr/sbin/sshd -i $SSHD_OPTS ; ignore_errors=yes ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }
+User=
+Id=sshd@sshd-keygen.service
+TriggeredBy=
+Description=OpenBSD Secure Shell server per-connection daemon
+ActiveState=inactive
+SubState=dead
+FragmentPath=/usr/lib/systemd/system/sshd@.service
+UnitFileState=static
+
+Type=oneshot
+ExecStart={ path=/usr/lib/systemd/systemd-pcrextend ; argv[]=/usr/lib/systemd/systemd-pcrextend --graceful --machine-id ; ignore_errors=no ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }
+User=
+Id=systemd-pcrmachine.service
+TriggeredBy=
+Description=TPM PCR Machine ID Measurement
+ActiveState=inactive
+SubState=dead
+FragmentPath=/usr/lib/systemd/system/systemd-pcrmachine.service
+UnitFileState=static
+
+Type=oneshot
+ExecStart={ path=/usr/sbin/wayvnc-generate-keys.sh ; argv[]=/usr/sbin/wayvnc-generate-keys.sh ; ignore_errors=no ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }
+User=
+Id=wayvnc-generate-keys.service
+TriggeredBy=
+Description=WayVNC Key Generation
+ActiveState=inactive
+SubState=dead
+FragmentPath=/usr/lib/systemd/system/wayvnc-generate-keys.service
+UnitFileState=static
+
+Type=oneshot
+ExecStart={ path=/usr/local/sbin/orbit-ha-backup-nas ; argv[]=/usr/local/sbin/orbit-ha-backup-nas ; ignore_errors=no ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }
+User=
+Id=orbit-ha-backup-nas.service
+TriggeredBy=orbit-ha-backup-nas.timer
+Description=ORBIT: Home-Assistant-Backups auf die NAS kopieren
+ActiveState=inactive
+SubState=dead
+FragmentPath=/etc/systemd/system/orbit-ha-backup-nas.service
+UnitFileState=static
+
+Type=simple
+ExecStart={ path=/usr/bin/docker ; argv[]=/usr/bin/docker wait noah-mqtt ; ignore_errors=no ; start_time=[Wed 2026-11-04 22:21:45 CET] ; stop_time=[n/a] ; pid=3277 ; code=(null) ; status=0/0 }
+User=
+Id=noah-mqtt.service
+TriggeredBy=
+Description=noah-mqtt Docker Compose Watchdog
+ActiveState=active
+SubState=running
+FragmentPath=/etc/systemd/system/noah-mqtt.service
+UnitFileState=enabled
+
+Type=oneshot
+ExecStart={ path=/usr/bin/python3 ; argv[]=/usr/bin/python3 /opt/orbit-security/scan.py malware ; ignore_errors=no ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }
+User=
+Id=orbit-security@malware.service
+TriggeredBy=orbit-security-malware.timer
+Description=ORBIT security center - check (malware)
+ActiveState=inactive
+SubState=dead
+FragmentPath=/etc/systemd/system/orbit-security@.service
+UnitFileState=static
+
+Type=dbus
+ExecStart={ path=/usr/libexec/udisks2/udisksd ; argv[]=/usr/libexec/udisks2/udisksd ; ignore_errors=no ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }
+User=
+Id=udisks2.service
+TriggeredBy=
+Description=Disk Manager
+ActiveState=active
+SubState=running
+FragmentPath=/usr/lib/systemd/system/udisks2.service
+UnitFileState=enabled
+
+Type=
+User=
+Id=connman.service
+TriggeredBy=
+Description=connman.service
+ActiveState=inactive
+SubState=dead
+FragmentPath=
+UnitFileState=
+
+Type=oneshot
+ExecStart={ path=/usr/lib/systemd/systemd-pcrextend ; argv[]=/usr/lib/systemd/systemd-pcrextend --graceful ready ; ignore_errors=no ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }
+User=
+Id=systemd-pcrphase.service
+TriggeredBy=
+Description=TPM PCR Barrier (User)
+ActiveState=inactive
+SubState=dead
+FragmentPath=/usr/lib/systemd/system/systemd-pcrphase.service
+UnitFileState=static
+
+Type=simple
+ExecStart={ path=/usr/lib/systemd/systemd-initctl ; argv[]=/usr/lib/systemd/systemd-initctl ; ignore_errors=no ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }
+User=
+Id=systemd-initctl.service
+TriggeredBy=systemd-initctl.socket
+Description=initctl Compatibility Daemon
+ActiveState=inactive
+SubState=dead
+FragmentPath=/usr/lib/systemd/system/systemd-initctl.service
+UnitFileState=static
+
+Type=oneshot
+ExecStart={ path=/usr/lib/systemd/systemd-sysroot-fstab-check ; argv[]=/usr/lib/systemd/systemd-sysroot-fstab-check ; ignore_errors=no ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }
+ExecStart={ path=systemctl ; argv[]=systemctl --no-block start initrd-cleanup.service ; ignore_errors=no ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }
+User=
+Id=initrd-parse-etc.service
+TriggeredBy=
+Description=Mountpoints Configured in the Real Root
+ActiveState=inactive
+SubState=dead
+FragmentPath=/usr/lib/systemd/system/initrd-parse-etc.service
+UnitFileState=static
+
+Type=forking
+ExecStart={ path=/etc/init.d/openipmi ; argv[]=/etc/init.d/openipmi start ; ignore_errors=no ; start_time=[Wed 2026-11-04 22:20:56 CET] ; stop_time=[Wed 2026-11-04 22:20:56 CET] ; pid=1540 ; code=exited ; status=1 }
+User=
+Id=openipmi.service
+TriggeredBy=
+Description=LSB: OpenIPMI Driver init script
+ActiveState=failed
+SubState=failed
+FragmentPath=/run/systemd/generator.late/openipmi.service
+UnitFileState=generated
+
+Type=oneshot
+ExecStart={ path=/usr/lib/systemd/systemd-pcrextend ; argv[]=/usr/lib/systemd/systemd-pcrextend --graceful sysinit ; ignore_errors=no ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }
+User=
+Id=systemd-pcrphase-sysinit.service
+TriggeredBy=
+Description=TPM PCR Barrier (Initialization)
+ActiveState=inactive
+SubState=dead
+FragmentPath=/usr/lib/systemd/system/systemd-pcrphase-sysinit.service
+UnitFileState=static
+
+Type=simple
+ExecStart={ path=/usr/share/grafana/bin/grafana ; argv[]=/usr/share/grafana/bin/grafana server --config=${CONF_FILE} --pidfile=${PID_FILE_DIR}/grafana-server.pid --packaging=deb cfg:default.paths.logs=${LOG_DIR} cfg:default.paths.data=${DATA_DIR} cfg:default.paths.plugins=${PLUGINS_DIR} cfg:default.paths.provisioning=${PROVISIONING_CFG_DIR} cfg:default.paths.bundled_plugins=${DATA_DIR}/plugins-bundled ; ignore_errors=no ; start_time=[Wed 2026-11-04 22:20:55 CET] ; stop_time=[n/a] ; pid=1514 ; code=(null) ; status=0/0 }
+User=grafana
+Id=grafana-server.service
+TriggeredBy=
+Description=Grafana instance
+ActiveState=active
+SubState=running
+FragmentPath=/usr/lib/systemd/system/grafana-server.service
+UnitFileState=enabled
+
+Type=oneshot
+ExecStart={ path=/bin/sh ; argv[]=/bin/sh -o pipefail -c /usr/bin/ipmitool sensor | /usr/share/prometheus-node-exporter-collectors/ipmitool | sponge /var/lib/prometheus/node-exporter/ipmitool_sensor.prom ; ignore_errors=no ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }
+User=
+Id=prometheus-node-exporter-ipmitool-sensor.service
+TriggeredBy=prometheus-node-exporter-ipmitool-sensor.timer
+Description=Collect ipmitool sensor metrics for prometheus-node-exporter
+ActiveState=inactive
+SubState=dead
+FragmentPath=/usr/lib/systemd/system/prometheus-node-exporter-ipmitool-sensor.service
+UnitFileState=static
+
+Type=forking
+ExecStart={ path=/usr/sbin/plymouthd ; argv[]=/usr/sbin/plymouthd --mode=shutdown --attach-to-session ; ignore_errors=no ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }
+User=
+Id=plymouth-halt.service
+TriggeredBy=
+Description=Show Plymouth Halt Screen
+ActiveState=inactive
+SubState=dead
+FragmentPath=/usr/lib/systemd/system/plymouth-halt.service
+UnitFileState=static
+
+Type=oneshot
+User=
+Id=systemd-soft-reboot.service
+TriggeredBy=
+Description=Reboot System Userspace
+ActiveState=inactive
+SubState=dead
+FragmentPath=/usr/lib/systemd/system/systemd-soft-reboot.service
+UnitFileState=static
+
+Type=oneshot
+ExecStart={ path=/sbin/modprobe ; argv[]=/sbin/modprobe -abq configfs ; ignore_errors=yes ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }
+User=
+Id=modprobe@configfs.service
+TriggeredBy=
+Description=Load Kernel Module configfs
+ActiveState=inactive
+SubState=dead
+FragmentPath=/usr/lib/systemd/system/modprobe@.service
+UnitFileState=static
+
+Type=oneshot
+ExecStart={ path=/usr/lib/systemd/systemd-fsck ; argv[]=/usr/lib/systemd/systemd-fsck /dev/disk/by-partuuid/27120e7a-01 ; ignore_errors=no ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }
+User=
+Id=systemd-fsck@dev-disk-by\x2dpartuuid-27120e7a\x2d01.service
+TriggeredBy=
+Description=File System Check on /dev/disk/by-partuuid/27120e7a-01
+ActiveState=active
+SubState=exited
+FragmentPath=/usr/lib/systemd/system/systemd-fsck@.service
+UnitFileState=static
+
+Type=oneshot
+ExecStart={ path=/usr/lib/systemd/systemd-fsck ; argv[]=/usr/lib/systemd/systemd-fsck ; ignore_errors=no ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }
+User=
+Id=systemd-fsck-root.service
+TriggeredBy=
+Description=File System Check on Root Device
+ActiveState=inactive
+SubState=dead
+FragmentPath=/usr/lib/systemd/system/systemd-fsck-root.service
+UnitFileState=enabled-runtime
+
+Type=oneshot
+ExecStart={ path=/bin/rm ; argv[]=/bin/rm -f /var/swap ; ignore_errors=no ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }
+User=
+Id=rpi-remove-swap-file@var-swap.service
+TriggeredBy=
+Description=Remove swap file /var/swap
+ActiveState=inactive
+SubState=dead
+FragmentPath=/usr/lib/systemd/system/rpi-remove-swap-file@.service
+UnitFileState=static
+
+Type=
+User=
+Id=chronyd.service
+TriggeredBy=
+Description=chronyd.service
+ActiveState=inactive
+SubState=dead
+FragmentPath=
+UnitFileState=
+
+Type=dbus
+ExecStart={ path=/usr/sbin/avahi-daemon ; argv[]=/usr/sbin/avahi-daemon -s ; ignore_errors=no ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }
+User=
+Id=avahi-daemon.service
+TriggeredBy=avahi-daemon.socket
+Description=Avahi mDNS/DNS-SD Stack
+ActiveState=active
+SubState=running
+FragmentPath=/usr/lib/systemd/system/avahi-daemon.service
+UnitFileState=enabled
+
+Type=idle
+ExecStart={ path=/sbin/agetty ; argv[]=/sbin/agetty --autologin pi --noclear tty1 $TERM ; ignore_errors=yes ; start_time=[Wed 2026-11-04 22:20:57 CET] ; stop_time=[n/a] ; pid=1609 ; code=(null) ; status=0/0 }
+User=
+Id=getty@tty1.service
+TriggeredBy=
+Description=Getty on tty1
+ActiveState=active
+SubState=running
+FragmentPath=/usr/lib/systemd/system/getty@.service
+UnitFileState=enabled
+
+Type=oneshot
+ExecStart={ path=/lib/console-setup/keyboard-setup.sh ; argv[]=/lib/console-setup/keyboard-setup.sh ; ignore_errors=no ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }
+User=
+Id=keyboard-setup.service
+TriggeredBy=
+Description=Set the console keyboard layout
+ActiveState=active
+SubState=exited
+FragmentPath=/usr/lib/systemd/system/keyboard-setup.service
+UnitFileState=enabled
+
+Type=
+User=
+Id=syslog.service
+TriggeredBy=syslog.socket
+Description=syslog.service
+ActiveState=inactive
+SubState=dead
+FragmentPath=
+UnitFileState=
+
+Type=oneshot
+ExecStart={ path=/usr/bin/plymouth ; argv[]=/usr/bin/plymouth update-root-fs --read-write ; ignore_errors=yes ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }
+User=
+Id=plymouth-read-write.service
+TriggeredBy=
+Description=Tell Plymouth To Write Out Runtime Data
+ActiveState=active
+SubState=exited
+FragmentPath=/usr/lib/systemd/system/plymouth-read-write.service
+UnitFileState=static
+
+Type=oneshot
+ExecStart={ path=sh ; argv[]=sh -c echo "start" | nc -Uu -W1 /run/cloud-init/share/network.sock -s /run/cloud-init/share/network-return.sock | sh ; ignore_errors=no ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }
+User=
+Id=cloud-init-network.service
+TriggeredBy=
+Description=Cloud-init: Network Stage
+ActiveState=active
+SubState=exited
+FragmentPath=/usr/lib/systemd/system/cloud-init-network.service
+UnitFileState=enabled
+
+Type=oneshot
+ExecStart={ path=/lib/console-setup/console-setup.sh ; argv[]=/lib/console-setup/console-setup.sh ; ignore_errors=no ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }
+User=
+Id=console-setup.service
+TriggeredBy=
+Description=Set console font and keymap
+ActiveState=active
+SubState=exited
+FragmentPath=/usr/lib/systemd/system/console-setup.service
+UnitFileState=enabled
+
+Type=oneshot
+ExecStart={ path=/usr/lib/systemd/systemd-hibernate-resume ; argv[]=/usr/lib/systemd/systemd-hibernate-resume --clear ; ignore_errors=no ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }
+User=
+Id=systemd-hibernate-clear.service
+TriggeredBy=
+Description=Clear Stale Hibernate Storage Info
+ActiveState=inactive
+SubState=dead
+FragmentPath=/usr/lib/systemd/system/systemd-hibernate-clear.service
+UnitFileState=static
+
+Type=oneshot
+ExecStart={ path=/usr/bin/install ; argv[]=/usr/bin/install -d -o man -g man -m 0755 /var/cache/man ; ignore_errors=no ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }
+ExecStart={ path=/usr/bin/mandb ; argv[]=/usr/bin/mandb --quiet ; ignore_errors=no ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }
+User=man
+Id=man-db.service
+TriggeredBy=man-db.timer
+Description=Daily man-db regeneration
+ActiveState=inactive
+SubState=dead
+FragmentPath=/usr/lib/systemd/system/man-db.service
+UnitFileState=static
+
+Type=oneshot
+ExecStart={ path=/bin/sh ; argv[]=/bin/sh -o pipefail -c /usr/share/prometheus-node-exporter-collectors/apt_info.py | sponge /var/lib/prometheus/node-exporter/apt.prom ; ignore_errors=no ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }
+User=
+Id=prometheus-node-exporter-apt.service
+TriggeredBy=prometheus-node-exporter-apt.timer
+Description=Collect apt metrics for prometheus-node-exporter
+ActiveState=inactive
+SubState=dead
+FragmentPath=/usr/lib/systemd/system/prometheus-node-exporter-apt.service
+UnitFileState=static
+
+Type=oneshot
+ExecStart={ path=/usr/lib/apt/apt.systemd.daily ; argv[]=/usr/lib/apt/apt.systemd.daily install ; ignore_errors=no ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }
+User=
+Id=apt-daily-upgrade.service
+TriggeredBy=apt-daily-upgrade.timer
+Description=Daily apt upgrade and clean activities
+ActiveState=inactive
+SubState=dead
+FragmentPath=/usr/lib/systemd/system/apt-daily-upgrade.service
+UnitFileState=static
+
+Type=oneshot
+ExecStart={ path=udevadm ; argv[]=udevadm control --load-credentials ; ignore_errors=no ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }
+User=
+Id=systemd-udev-load-credentials.service
+TriggeredBy=
+Description=Load udev Rules from Credentials
+ActiveState=active
+SubState=exited
+FragmentPath=/usr/lib/systemd/system/systemd-udev-load-credentials.service
+UnitFileState=disabled
+
+Type=oneshot
+User=
+Id=systemd-kexec.service
+TriggeredBy=
+Description=Reboot via kexec
+ActiveState=inactive
+SubState=dead
+FragmentPath=/usr/lib/systemd/system/systemd-kexec.service
+UnitFileState=static
+
+Type=oneshot
+ExecStart={ path=/usr/sbin/netplan ; argv[]=/usr/sbin/netplan apply --only-ovs-cleanup ; ignore_errors=no ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }
+User=
+Id=netplan-ovs-cleanup.service
+TriggeredBy=
+Description=OpenVSwitch configuration for cleanup
+ActiveState=inactive
+SubState=dead
+FragmentPath=/run/systemd/system/netplan-ovs-cleanup.service
+UnitFileState=enabled-runtime
+
+Type=forking
+ExecStart={ path=/etc/rc.local ; argv[]=/etc/rc.local start ; ignore_errors=no ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }
+User=
+Id=rc-local.service
+TriggeredBy=
+Description=/etc/rc.local Compatibility
+ActiveState=inactive
+SubState=dead
+FragmentPath=/usr/lib/systemd/system/rc-local.service
+UnitFileState=static
+
+Type=simple
+ExecStart={ path=/usr/bin/pihole-FTL ; argv[]=/usr/bin/pihole-FTL -f ; ignore_errors=no ; start_time=[Wed 2026-11-04 22:20:58 CET] ; stop_time=[n/a] ; pid=1718 ; code=(null) ; status=0/0 }
+User=pihole
+Id=pihole-FTL.service
+TriggeredBy=
+Description=Pi-hole FTL
+ActiveState=active
+SubState=running
+FragmentPath=/etc/systemd/system/pihole-FTL.service
+UnitFileState=enabled
+
+Type=simple
+ExecStart={ path=/usr/sbin/alsactl ; argv[]=/usr/sbin/alsactl -E HOME=/run/alsa -E XDG_RUNTIME_DIR=/run/alsa/runtime -s -n 19 -c rdaemon ; ignore_errors=yes ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }
+User=
+Id=alsa-state.service
+TriggeredBy=
+Description=Manage Sound Card State (restore and store)
+ActiveState=inactive
+SubState=dead
+FragmentPath=/usr/lib/systemd/system/alsa-state.service
+UnitFileState=static
+
+Type=notify-reload
+ExecStart={ path=/usr/lib/systemd/systemd ; argv[]=/usr/lib/systemd/systemd --user ; ignore_errors=no ; start_time=[Wed 2026-11-04 22:20:57 CET] ; stop_time=[n/a] ; pid=1620 ; code=(null) ; status=0/0 }
+User=1000
+Id=user@1000.service
+TriggeredBy=
+Description=User Manager for UID 1000
+ActiveState=active
+SubState=running
+FragmentPath=/usr/lib/systemd/system/user@.service
+UnitFileState=static
+
+Type=oneshot
+User=
+Id=systemd-halt.service
+TriggeredBy=
+Description=System Halt
+ActiveState=inactive
+SubState=dead
+FragmentPath=/usr/lib/systemd/system/systemd-halt.service
+UnitFileState=static
+
+Type=oneshot
+ExecStart={ path=/sbin/ldconfig ; argv[]=/sbin/ldconfig -X ; ignore_errors=no ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }
+User=
+Id=ldconfig.service
+TriggeredBy=
+Description=Rebuild Dynamic Linker Cache
+ActiveState=inactive
+SubState=dead
+FragmentPath=/usr/lib/systemd/system/ldconfig.service
+UnitFileState=static
+
+Type=oneshot
+ExecStart={ path=sh ; argv[]=sh -c echo "start" | nc -Uu -W1 /run/cloud-init/share/final.sock -s /run/cloud-init/share/final-return.sock | sh ; ignore_errors=no ; start_time=[Wed 2026-11-04 22:21:45 CET] ; stop_time=[Wed 2026-11-04 22:21:46 CET] ; pid=3278 ; code=exited ; status=0 }
+User=
+Id=cloud-final.service
+TriggeredBy=
+Description=Cloud-init: Final Stage
+ActiveState=active
+SubState=exited
+FragmentPath=/usr/lib/systemd/system/cloud-final.service
+UnitFileState=enabled
+
+Type=oneshot
+ExecStart={ path=/usr/lib/rpi-swap/bin/rpi-resize-swap-file ; argv[]=/usr/lib/rpi-swap/bin/rpi-resize-swap-file ; ignore_errors=no ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }
+User=
+Id=rpi-resize-swap-file.service
+TriggeredBy=
+Description=rpi-resize-var-swap-service - resize swapfile
+ActiveState=inactive
+SubState=dead
+FragmentPath=/usr/lib/systemd/system/rpi-resize-swap-file.service
+UnitFileState=static
+
+Type=notify
+ExecStart={ path=/usr/bin/dockerd ; argv[]=/usr/bin/dockerd -H fd:// --containerd=/run/containerd/containerd.sock ; ignore_errors=no ; start_time=[Wed 2026-11-04 22:20:58 CET] ; stop_time=[n/a] ; pid=1719 ; code=(null) ; status=0/0 }
+User=
+Id=docker.service
+TriggeredBy=docker.socket
+Description=Docker Application Container Engine
+ActiveState=active
+SubState=running
+FragmentPath=/usr/lib/systemd/system/docker.service
+UnitFileState=enabled
+
+Type=forking
+ExecStart={ path=/usr/sbin/rpc.svcgssd ; argv[]=/usr/sbin/rpc.svcgssd ; ignore_errors=no ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }
+User=
+Id=rpc-svcgssd.service
+TriggeredBy=
+Description=RPC security service for NFS server
+ActiveState=inactive
+SubState=dead
+FragmentPath=/usr/lib/systemd/system/rpc-svcgssd.service
+UnitFileState=static
+
+Type=oneshot
+ExecStart={ path=/sbin/modprobe ; argv[]=/sbin/modprobe -abq nvme_fabrics ; ignore_errors=yes ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }
+User=
+Id=modprobe@nvme_fabrics.service
+TriggeredBy=
+Description=Load Kernel Module nvme_fabrics
+ActiveState=inactive
+SubState=dead
+FragmentPath=/usr/lib/systemd/system/modprobe@.service
+UnitFileState=static
+
+Type=oneshot
+ExecStart={ path=/sbin/modprobe ; argv[]=/sbin/modprobe -abq efi_pstore ; ignore_errors=yes ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }
+User=
+Id=modprobe@efi_pstore.service
+TriggeredBy=
+Description=Load Kernel Module efi_pstore
+ActiveState=inactive
+SubState=dead
+FragmentPath=/usr/lib/systemd/system/modprobe@.service
+UnitFileState=static
+
+Type=oneshot
+ExecStart={ path=systemd-sysext ; argv[]=systemd-sysext refresh ; ignore_errors=no ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }
+User=
+Id=systemd-sysext.service
+TriggeredBy=
+Description=Merge System Extension Images into /usr/ and /opt/
+ActiveState=inactive
+SubState=dead
+FragmentPath=/usr/lib/systemd/system/systemd-sysext.service
+UnitFileState=disabled
+
+Type=notify
+ExecStart={ path=/usr/sbin/collectd ; argv[]=/usr/sbin/collectd ; ignore_errors=no ; start_time=[Wed 2026-11-04 22:20:48 CET] ; stop_time=[n/a] ; pid=1220 ; code=(null) ; status=0/0 }
+User=
+Id=collectd.service
+TriggeredBy=
+Description=Statistics collection and monitoring daemon
+ActiveState=active
+SubState=running
+FragmentPath=/usr/lib/systemd/system/collectd.service
+UnitFileState=enabled
+
+Type=oneshot
+ExecStart={ path=/usr/bin/plymouth ; argv[]=/usr/bin/plymouth --wait ; ignore_errors=yes ; start_time=[Wed 2026-11-04 22:20:56 CET] ; stop_time=[Wed 2026-11-04 22:20:57 CET] ; pid=1545 ; code=exited ; status=0 }
+User=
+Id=plymouth-quit-wait.service
+TriggeredBy=
+Description=Hold until boot process finishes up
+ActiveState=active
+SubState=exited
+FragmentPath=/usr/lib/systemd/system/plymouth-quit-wait.service
+UnitFileState=static
+
+Type=idle
+ExecStart={ path=/sbin/agetty ; argv[]=/sbin/agetty -o -- \u --noreset --noclear --keep-baud 115200,57600,38400,9600 - ${TERM} ; ignore_errors=yes ; start_time=[Wed 2026-11-04 22:20:57 CET] ; stop_time=[n/a] ; pid=1612 ; code=(null) ; status=0/0 }
+User=
+Id=serial-getty@ttyS0.service
+TriggeredBy=
+Description=Serial Getty on ttyS0
+ActiveState=active
+SubState=running
+FragmentPath=/usr/lib/systemd/system/serial-getty@.service
+UnitFileState=enabled-runtime
+
+Type=notify
+ExecStart={ path=/usr/bin/containerd ; argv[]=/usr/bin/containerd ; ignore_errors=no ; start_time=[Wed 2026-11-04 22:20:48 CET] ; stop_time=[n/a] ; pid=1224 ; code=(null) ; status=0/0 }
+User=
+Id=containerd.service
+TriggeredBy=
+Description=containerd container runtime
+ActiveState=active
+SubState=running
+FragmentPath=/usr/lib/systemd/system/containerd.service
+UnitFileState=enabled
+
+Type=oneshot
+ExecStart={ path=/usr/bin/python3 ; argv[]=/usr/bin/python3 /opt/orbit-security/scan.py request ; ignore_errors=no ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }
+User=
+Id=orbit-security@request.service
+TriggeredBy=orbit-security-request.path
+Description=ORBIT security center - check (request)
+ActiveState=inactive
+SubState=dead
+FragmentPath=/etc/systemd/system/orbit-security@.service
+UnitFileState=static
+
+Type=
+User=
+Id=systemd-vconsole-setup.service
+TriggeredBy=
+Description=systemd-vconsole-setup.service
+ActiveState=inactive
+SubState=dead
+FragmentPath=
+UnitFileState=
+
+Type=oneshot
+ExecStart={ path=/usr/bin/plymouth ; argv[]=/usr/bin/plymouth update-root-fs --new-root-dir=/run/initramfs ; ignore_errors=yes ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }
+User=
+Id=plymouth-switch-root-initramfs.service
+TriggeredBy=
+Description=Tell Plymouth To Jump To initramfs
+ActiveState=inactive
+SubState=dead
+FragmentPath=/usr/lib/systemd/system/plymouth-switch-root-initramfs.service
+UnitFileState=static
+
+Type=oneshot
+ExecStart={ path=/usr/libexec/dpkg/dpkg-db-backup ; argv[]=/usr/libexec/dpkg/dpkg-db-backup ; ignore_errors=no ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }
+User=
+Id=dpkg-db-backup.service
+TriggeredBy=dpkg-db-backup.timer
+Description=Daily dpkg database backup service
+ActiveState=inactive
+SubState=dead
+FragmentPath=/usr/lib/systemd/system/dpkg-db-backup.service
+UnitFileState=static
+
+Type=dbus
+ExecStart={ path=/usr/sbin/lightdm ; argv[]=/usr/sbin/lightdm ; ignore_errors=no ; start_time=[Wed 2026-11-04 22:20:56 CET] ; stop_time=[n/a] ; pid=1543 ; code=(null) ; status=0/0 }
+User=
+Id=lightdm.service
+TriggeredBy=
+Description=Light Display Manager
+ActiveState=active
+SubState=running
+FragmentPath=/usr/lib/systemd/system/lightdm.service
+UnitFileState=enabled
+
+Type=notify
+ExecStart={ path=/usr/lib/systemd/systemd-journald ; argv[]=/usr/lib/systemd/systemd-journald ; ignore_errors=no ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }
+User=
+Id=systemd-journald.service
+TriggeredBy=systemd-journald-dev-log.socket systemd-journald.socket systemd-journald-audit.socket
+Description=Journal Service
+ActiveState=active
+SubState=running
+FragmentPath=/usr/lib/systemd/system/systemd-journald.service
+UnitFileState=static
+
+Type=oneshot
+ExecStart={ path=/bin/sh ; argv[]=/bin/sh -c echo add > /sys/class/fc/fc_udev_device/nvme_discovery ; ignore_errors=no ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }
+User=
+Id=nvmefc-boot-connections.service
+TriggeredBy=
+Description=Auto-connect to subsystems on FC-NVME devices found during boot
+ActiveState=inactive
+SubState=dead
+FragmentPath=/usr/lib/systemd/system/nvmefc-boot-connections.service
+UnitFileState=enabled
+
+Type=idle
+ExecStart={ path=/usr/lib/systemd/systemd-sulogin-shell ; argv[]=/usr/lib/systemd/systemd-sulogin-shell rescue ; ignore_errors=yes ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }
+User=
+Id=rescue.service
+TriggeredBy=
+Description=Rescue Shell
+ActiveState=inactive
+SubState=dead
+FragmentPath=/usr/lib/systemd/system/rescue.service
+UnitFileState=static
+
+Type=
+User=
+Id=nslcd.service
+TriggeredBy=
+Description=nslcd.service
+ActiveState=inactive
+SubState=dead
+FragmentPath=
+UnitFileState=
+
+Type=forking
+ExecStart={ path=/usr/sbin/blkmapd ; argv[]=/usr/sbin/blkmapd ; ignore_errors=no ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }
+User=
+Id=nfs-blkmap.service
+TriggeredBy=
+Description=pNFS block layout mapping daemon
+ActiveState=active
+SubState=running
+FragmentPath=/usr/lib/systemd/system/nfs-blkmap.service
+UnitFileState=enabled
+
+Type=oneshot
+ExecStart={ path=/usr/bin/python3 ; argv[]=/usr/bin/python3 /opt/orbit-security/scan.py full ; ignore_errors=no ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }
+User=
+Id=orbit-security@full.service
+TriggeredBy=orbit-security-full.timer
+Description=ORBIT security center - check (full)
+ActiveState=inactive
+SubState=dead
+FragmentPath=/etc/systemd/system/orbit-security@.service
+UnitFileState=static
+
+Type=oneshot
+ExecStart={ path=/usr/bin/plymouth ; argv[]=/usr/bin/plymouth update-root-fs --new-root-dir=/sysroot ; ignore_errors=yes ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }
+User=
+Id=plymouth-switch-root.service
+TriggeredBy=
+Description=Plymouth switch root service
+ActiveState=inactive
+SubState=dead
+FragmentPath=/usr/lib/systemd/system/plymouth-switch-root.service
+UnitFileState=static
+
+Type=oneshot
+ExecStart={ path=/usr/lib/systemd/systemd-random-seed ; argv[]=/usr/lib/systemd/systemd-random-seed load ; ignore_errors=no ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }
+User=
+Id=systemd-random-seed.service
+TriggeredBy=
+Description=Load/Save OS Random Seed
+ActiveState=active
+SubState=exited
+FragmentPath=/usr/lib/systemd/system/systemd-random-seed.service
+UnitFileState=static
+
+Type=oneshot
+ExecStart={ path=/usr/bin/rpi-eeprom-update ; argv[]=/usr/bin/rpi-eeprom-update -s -a ; ignore_errors=no ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }
+User=
+Id=rpi-eeprom-update.service
+TriggeredBy=
+Description=Check for Raspberry Pi EEPROM updates
+ActiveState=active
+SubState=exited
+FragmentPath=/usr/lib/systemd/system/rpi-eeprom-update.service
+UnitFileState=enabled
+
+Type=oneshot
+ExecStart={ path=/usr/lib/systemd/systemd-battery-check ; argv[]=/usr/lib/systemd/systemd-battery-check ; ignore_errors=no ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }
+User=
+Id=systemd-battery-check.service
+TriggeredBy=
+Description=Check battery level during early boot
+ActiveState=inactive
+SubState=dead
+FragmentPath=/usr/lib/systemd/system/systemd-battery-check.service
+UnitFileState=static
+
+Type=oneshot
+ExecStart={ path=/usr/bin/nm-online ; argv[]=/usr/bin/nm-online -s -q ; ignore_errors=no ; start_time=[Wed 2026-11-04 22:20:48 CET] ; stop_time=[Wed 2026-11-04 22:20:55 CET] ; pid=1194 ; code=exited ; status=0 }
+User=
+Id=NetworkManager-wait-online.service
+TriggeredBy=
+Description=Network Manager Wait Online
+ActiveState=active
+SubState=exited
+FragmentPath=/usr/lib/systemd/system/NetworkManager-wait-online.service
+UnitFileState=enabled
+
+Type=oneshot
+ExecStart={ path=/sbin/modprobe ; argv[]=/sbin/modprobe -abq drm ; ignore_errors=yes ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }
+User=
+Id=modprobe@drm.service
+TriggeredBy=
+Description=Load Kernel Module drm
+ActiveState=inactive
+SubState=dead
+FragmentPath=/usr/lib/systemd/system/modprobe@.service
+UnitFileState=static
+
+Type=notify
+ExecStart={ path=/usr/lib/systemd/systemd-timesyncd ; argv[]=/usr/lib/systemd/systemd-timesyncd ; ignore_errors=no ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }
+User=systemd-timesync
+Id=systemd-timesyncd.service
+TriggeredBy=
+Description=Network Time Synchronization
+ActiveState=active
+SubState=running
+FragmentPath=/usr/lib/systemd/system/systemd-timesyncd.service
+UnitFileState=enabled
+
+Type=oneshot
+ExecStart={ path=/bin/true ; argv[]=/bin/true ; ignore_errors=no ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }
+User=
+Id=nfs-utils.service
+TriggeredBy=
+Description=NFS server and client services
+ActiveState=inactive
+SubState=dead
+FragmentPath=/usr/lib/systemd/system/nfs-utils.service
+UnitFileState=static
+
+Type=oneshot
+ExecStart={ path=/usr/lib/systemd/systemd-quotacheck ; argv[]=/usr/lib/systemd/systemd-quotacheck / ; ignore_errors=no ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }
+User=
+Id=systemd-quotacheck-root.service
+TriggeredBy=
+Description=Root File System Quota Check
+ActiveState=inactive
+SubState=dead
+FragmentPath=/usr/lib/systemd/system/systemd-quotacheck-root.service
+UnitFileState=static
+
+Type=oneshot
+ExecStart={ path=/opt/restore-probe/app/scripts/restore-probe-failed.sh ; argv[]=/opt/restore-probe/app/scripts/restore-probe-failed.sh restic-backup.service ; ignore_errors=no ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }
+User=
+Id=restore-probe-failed@restic-backup.service.service
+TriggeredBy=
+Description=Restore Probe: report that restic-backup.service itself crashed (dead-man's switch, part 1)
+ActiveState=inactive
+SubState=dead
+FragmentPath=/etc/systemd/system/restore-probe-failed@.service
+UnitFileState=static
+
+Type=oneshot
+ExecStart={ path=systemd-confext ; argv[]=systemd-confext refresh ; ignore_errors=no ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }
+User=
+Id=systemd-confext.service
+TriggeredBy=
+Description=Merge System Configuration Images into /etc/
+ActiveState=inactive
+SubState=dead
+FragmentPath=/usr/lib/systemd/system/systemd-confext.service
+UnitFileState=disabled
+
+Type=notify-reload
+ExecStart={ path=/usr/lib/systemd/systemd-logind ; argv[]=/usr/lib/systemd/systemd-logind ; ignore_errors=no ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }
+User=
+Id=systemd-logind.service
+TriggeredBy=
+Description=User Login Management
+ActiveState=active
+SubState=running
+FragmentPath=/usr/lib/systemd/system/systemd-logind.service
+UnitFileState=static
+
+Type=notify-reload
+ExecStart={ path=/usr/lib/systemd/systemd-networkd ; argv[]=/usr/lib/systemd/systemd-networkd ; ignore_errors=no ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }
+User=systemd-network
+Id=systemd-networkd.service
+TriggeredBy=systemd-networkd.socket
+Description=Network Configuration
+ActiveState=inactive
+SubState=dead
+FragmentPath=/usr/lib/systemd/system/systemd-networkd.service
+UnitFileState=disabled
+
+Type=oneshot
+ExecStart={ path=/usr/lib/systemd/systemd-tpm2-setup ; argv[]=/usr/lib/systemd/systemd-tpm2-setup --early=yes --graceful ; ignore_errors=no ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }
+User=
+Id=systemd-tpm2-setup-early.service
+TriggeredBy=
+Description=Early TPM SRK Setup
+ActiveState=inactive
+SubState=dead
+FragmentPath=/usr/lib/systemd/system/systemd-tpm2-setup-early.service
+UnitFileState=static
+
+Type=
+User=
+Id=iptables.service
+TriggeredBy=
+Description=iptables.service
+ActiveState=inactive
+SubState=dead
+FragmentPath=
+UnitFileState=
+
+Type=oneshot
+ExecStart={ path=/usr/bin/kmod ; argv[]=/usr/bin/kmod static-nodes --format=tmpfiles --output=/run/tmpfiles.d/static-nodes.conf ; ignore_errors=no ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }
+User=
+Id=kmod-static-nodes.service
+TriggeredBy=
+Description=Create List of Static Device Nodes
+ActiveState=active
+SubState=exited
+FragmentPath=/usr/lib/systemd/system/kmod-static-nodes.service
+UnitFileState=static
+
+Type=
+User=
+Id=systemd-resolved.service
+TriggeredBy=
+Description=systemd-resolved.service
+ActiveState=inactive
+SubState=dead
+FragmentPath=
+UnitFileState=
+
+Type=oneshot
+ExecStart={ path=udevadm ; argv[]=udevadm trigger --type=all --action=add --prioritized-subsystem=module,block,tpmrm,net,tty,input ; ignore_errors=yes ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }
+User=
+Id=systemd-udev-trigger.service
+TriggeredBy=
+Description=Coldplug All udev Devices
+ActiveState=active
+SubState=exited
+FragmentPath=/usr/lib/systemd/system/systemd-udev-trigger.service
+UnitFileState=static
+
+Type=oneshot
+ExecStart={ path=systemd-hwdb ; argv[]=systemd-hwdb update ; ignore_errors=no ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }
+User=
+Id=systemd-hwdb-update.service
+TriggeredBy=
+Description=Rebuild Hardware Database
+ActiveState=inactive
+SubState=dead
+FragmentPath=/usr/lib/systemd/system/systemd-hwdb-update.service
+UnitFileState=static
+
+Type=
+User=
+Id=influxdb.service
+TriggeredBy=
+Description=influxdb.service
+ActiveState=inactive
+SubState=dead
+FragmentPath=
+UnitFileState=
+
+Type=oneshot
+ExecStart={ path=/sbin/e2scrub_all ; argv[]=/sbin/e2scrub_all -A -r ; ignore_errors=no ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }
+User=root
+Id=e2scrub_reap.service
+TriggeredBy=
+Description=Remove Stale Online ext4 Metadata Check Snapshots
+ActiveState=inactive
+SubState=dead
+FragmentPath=/usr/lib/systemd/system/e2scrub_reap.service
+UnitFileState=enabled
+
+Type=oneshot
+ExecStart={ path=/usr/sbin/logrotate ; argv[]=/usr/sbin/logrotate /etc/logrotate.conf ; ignore_errors=no ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }
+User=
+Id=logrotate.service
+TriggeredBy=logrotate.timer
+Description=Rotate log files
+ActiveState=inactive
+SubState=dead
+FragmentPath=/usr/lib/systemd/system/logrotate.service
+UnitFileState=static
+
+Type=
+User=
+Id=mariadb.service
+TriggeredBy=
+Description=mariadb.service
+ActiveState=inactive
+SubState=dead
+FragmentPath=
+UnitFileState=
+
+Type=notify
+ExecStart={ path=/usr/sbin/mosquitto ; argv[]=/usr/sbin/mosquitto -c /etc/mosquitto/mosquitto.conf ; ignore_errors=no ; start_time=[Wed 2026-11-04 22:20:55 CET] ; stop_time=[n/a] ; pid=1533 ; code=(null) ; status=0/0 }
+User=
+Id=mosquitto.service
+TriggeredBy=
+Description=Mosquitto MQTT Broker
+ActiveState=active
+SubState=running
+FragmentPath=/usr/lib/systemd/system/mosquitto.service
+UnitFileState=enabled
+
+Type=oneshot
+ExecStart={ path=/usr/lib/systemd/systemd-tpm2-setup ; argv[]=/usr/lib/systemd/systemd-tpm2-setup --graceful ; ignore_errors=no ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }
+User=
+Id=systemd-tpm2-setup.service
+TriggeredBy=
+Description=TPM SRK Setup
+ActiveState=inactive
+SubState=dead
+FragmentPath=/usr/lib/systemd/system/systemd-tpm2-setup.service
+UnitFileState=static
+
+Type=simple
+ExecStart={ path=/usr/sbin/uuidd ; argv[]=/usr/sbin/uuidd --socket-activation --cont-clock ; ignore_errors=no ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }
+User=uuidd
+Id=uuidd.service
+TriggeredBy=uuidd.socket
+Description=Daemon for generating UUIDs
+ActiveState=inactive
+SubState=dead
+FragmentPath=/usr/lib/systemd/system/uuidd.service
+UnitFileState=indirect
+
+Type=notify
+ExecStart={ path=/usr/lib/systemd/systemd-hostnamed ; argv[]=/usr/lib/systemd/systemd-hostnamed ; ignore_errors=no ; start_time=[Wed 2026-11-04 22:20:37 CET] ; stop_time=[Wed 2026-11-04 22:21:24 CET] ; pid=842 ; code=exited ; status=0 }
+User=
+Id=systemd-hostnamed.service
+TriggeredBy=systemd-hostnamed.socket
+Description=Hostname Service
+ActiveState=inactive
+SubState=dead
+FragmentPath=/usr/lib/systemd/system/systemd-hostnamed.service
+UnitFileState=static
+
+Type=oneshot
+ExecStart={ path=/sbin/losetup ; argv[]=/sbin/losetup --nooverlap --find /var/swap ; ignore_errors=no ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }
+ExecStart={ path=/bin/sh ; argv[]=/bin/sh -c mkdir -p /dev/disk/by-backingfile && LOOP_DEV=$(losetup --associated "/var/swap" | cut -d: -f1) && ln -s "$LOOP_DEV" "/dev/disk/by-backingfile/var-swap" || true ; ignore_errors=no ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }
+User=
+Id=rpi-setup-loop@var-swap.service
+TriggeredBy=
+Description=rpi-setup-loop - set up file on loop device
+ActiveState=active
+SubState=exited
+FragmentPath=/usr/lib/systemd/system/rpi-setup-loop@.service
+UnitFileState=static
+
+Type=notify
+ExecStart={ path=/usr/lib/systemd/systemd-rfkill ; argv[]=/usr/lib/systemd/systemd-rfkill ; ignore_errors=no ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }
+User=
+Id=systemd-rfkill.service
+TriggeredBy=systemd-rfkill.socket
+Description=Load/Save RF Kill Switch Status
+ActiveState=inactive
+SubState=dead
+FragmentPath=/usr/lib/systemd/system/systemd-rfkill.service
+UnitFileState=static
+
+Type=
+User=
+Id=mysql.service
+TriggeredBy=
+Description=mysql.service
+ActiveState=inactive
+SubState=dead
+FragmentPath=
+UnitFileState=
+
+Type=
+User=
+Id=networking.service
+TriggeredBy=
+Description=networking.service
+ActiveState=inactive
+SubState=dead
+FragmentPath=
+UnitFileState=
+
+Type=simple
+ExecStart={ path=/usr/sbin/lynis ; argv[]=/usr/sbin/lynis audit system --cronjob ; ignore_errors=no ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }
+User=
+Id=lynis.service
+TriggeredBy=lynis.timer
+Description=Security audit and vulnerability scanner
+ActiveState=inactive
+SubState=dead
+FragmentPath=/usr/lib/systemd/system/lynis.service
+UnitFileState=static
+
+Type=dbus
+ExecStart={ path=/usr/libexec/accounts-daemon ; argv[]=/usr/libexec/accounts-daemon ; ignore_errors=no ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }
+User=
+Id=accounts-daemon.service
+TriggeredBy=
+Description=Accounts Service
+ActiveState=active
+SubState=running
+FragmentPath=/usr/lib/systemd/system/accounts-daemon.service
+UnitFileState=enabled
+
+Type=oneshot
+ExecStart={ path=/sbin/modprobe ; argv[]=/sbin/modprobe -q auth_rpcgss ; ignore_errors=no ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }
+User=
+Id=auth-rpcgss-module.service
+TriggeredBy=
+Description=Kernel Module supporting RPCSEC_GSS
+ActiveState=inactive
+SubState=dead
+FragmentPath=/usr/lib/systemd/system/auth-rpcgss-module.service
+UnitFileState=static
+
+Type=oneshot
+ExecStart={ path=networkctl ; argv[]=networkctl persistent-storage yes ; ignore_errors=no ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }
+User=systemd-network
+Id=systemd-networkd-persistent-storage.service
+TriggeredBy=
+Description=Enable Persistent Storage in systemd-networkd
+ActiveState=inactive
+SubState=dead
+FragmentPath=/usr/lib/systemd/system/systemd-networkd-persistent-storage.service
+UnitFileState=static
+
+Type=oneshot
+ExecStart={ path=/bin/bash ; argv[]=/bin/bash /mnt/nas-share/network-docs/source/tools/scan-and-publish.sh ; ignore_errors=no ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }
+User=root
+Id=orbit-network-doc-scan.service
+TriggeredBy=orbit-network-doc-scan.timer
+Description=Discover devices and record TCP services for ORBIT network documentation
+ActiveState=inactive
+SubState=dead
+FragmentPath=/etc/systemd/system/orbit-network-doc-scan.service
+UnitFileState=static
+
+Type=simple
+ExecStart={ path=systemd-tty-ask-password-agent ; argv[]=systemd-tty-ask-password-agent --wall ; ignore_errors=no ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }
+User=
+Id=systemd-ask-password-wall.service
+TriggeredBy=systemd-ask-password-wall.path
+Description=Forward Password Requests to Wall
+ActiveState=inactive
+SubState=dead
+FragmentPath=/usr/lib/systemd/system/systemd-ask-password-wall.service
+UnitFileState=static
+
+Type=oneshot
+ExecStart={ path=systemctl ; argv[]=systemctl --no-block isolate initrd-switch-root.target ; ignore_errors=no ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }
+User=
+Id=initrd-cleanup.service
+TriggeredBy=
+Description=Cleaning Up and Shutting Down Daemons
+ActiveState=inactive
+SubState=dead
+FragmentPath=/usr/lib/systemd/system/initrd-cleanup.service
+UnitFileState=static
+
+Type=oneshot
+ExecStart={ path=/usr/lib/systemd/systemd-hibernate-resume ; argv[]=/usr/lib/systemd/systemd-hibernate-resume ; ignore_errors=no ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }
+User=
+Id=systemd-hibernate-resume.service
+TriggeredBy=
+Description=Resume from hibernation
+ActiveState=inactive
+SubState=dead
+FragmentPath=/usr/lib/systemd/system/systemd-hibernate-resume.service
+UnitFileState=static
+
+Type=oneshot
+ExecStart={ path=systemctl ; argv[]=systemctl --no-block switch-root ; ignore_errors=no ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }
+User=
+Id=initrd-switch-root.service
+TriggeredBy=
+Description=Switch Root
+ActiveState=inactive
+SubState=dead
+FragmentPath=/usr/lib/systemd/system/initrd-switch-root.service
+UnitFileState=static
+
+Type=notify
+ExecStart={ path=/usr/sbin/tailscaled ; argv[]=/usr/sbin/tailscaled --state=/var/lib/tailscale/tailscaled.state --socket=/run/tailscale/tailscaled.sock --port=${PORT} $FLAGS ; ignore_errors=no ; start_time=[Wed 2026-11-04 22:20:48 CET] ; stop_time=[n/a] ; pid=1206 ; code=(null) ; status=0/0 }
+User=
+Id=tailscaled.service
+TriggeredBy=
+Description=Tailscale node agent
+ActiveState=active
+SubState=running
+FragmentPath=/usr/lib/systemd/system/tailscaled.service
+UnitFileState=enabled
+
+Type=simple
+ExecStart={ path=/usr/bin/systemd-tty-ask-password-agent ; argv[]=/usr/bin/systemd-tty-ask-password-agent --watch --plymouth ; ignore_errors=no ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }
+User=
+Id=systemd-ask-password-plymouth.service
+TriggeredBy=systemd-ask-password-plymouth.path
+Description=Forward Password Requests to Plymouth
+ActiveState=inactive
+SubState=dead
+FragmentPath=/usr/lib/systemd/system/systemd-ask-password-plymouth.service
+UnitFileState=static
+
+Type=oneshot
+ExecStart={ path=/sbin/fstrim ; argv[]=/sbin/fstrim --listed-in /etc/fstab:/proc/self/mountinfo --verbose --quiet-unsupported ; ignore_errors=no ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }
+User=
+Id=fstrim.service
+TriggeredBy=fstrim.timer
+Description=Discard unused blocks on filesystems from /etc/fstab
+ActiveState=inactive
+SubState=dead
+FragmentPath=/usr/lib/systemd/system/fstrim.service
+UnitFileState=static
+
+Type=simple
+ExecStart={ path=/usr/sbin/wayvnc-control.py ; argv[]=/usr/sbin/wayvnc-control.py ; ignore_errors=no ; start_time=[Wed 2026-11-04 22:20:55 CET] ; stop_time=[n/a] ; pid=1508 ; code=(null) ; status=0/0 }
+User=
+Id=wayvnc-control.service
+TriggeredBy=
+Description=VNC Control Service
+ActiveState=active
+SubState=running
+FragmentPath=/usr/lib/systemd/system/wayvnc-control.service
+UnitFileState=enabled
+
+Type=dbus
+ExecStart={ path=/usr/sbin/wpa_supplicant ; argv[]=/usr/sbin/wpa_supplicant -u -s -O DIR=/run/wpa_supplicant GROUP=netdev ; ignore_errors=no ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }
+User=
+Id=wpa_supplicant.service
+TriggeredBy=
+Description=WPA supplicant
+ActiveState=active
+SubState=running
+FragmentPath=/usr/lib/systemd/system/wpa_supplicant.service
+UnitFileState=enabled
+
+Type=simple
+ExecStart={ path=/usr/bin/prometheus ; argv[]=/usr/bin/prometheus $ARGS ; ignore_errors=no ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }
+User=prometheus
+Id=prometheus.service
+TriggeredBy=
+Description=Monitoring system and time series database
+ActiveState=active
+SubState=running
+FragmentPath=/usr/lib/systemd/system/prometheus.service
+UnitFileState=enabled
+
+Type=
+User=
+Id=mkinitcpio-generate-shutdown-ramfs.service
+TriggeredBy=
+Description=mkinitcpio-generate-shutdown-ramfs.service
+ActiveState=inactive
+SubState=dead
+FragmentPath=
+UnitFileState=
+
+Type=dbus
+ExecStart={ path=/usr/sbin/NetworkManager ; argv[]=/usr/sbin/NetworkManager --no-daemon ; ignore_errors=no ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }
+User=
+Id=NetworkManager.service
+TriggeredBy=
+Description=Network Manager
+ActiveState=active
+SubState=running
+FragmentPath=/usr/lib/systemd/system/NetworkManager.service
+UnitFileState=enabled
+
+Type=oneshot
+ExecStart={ path=/usr/lib/systemd/systemd-user-runtime-dir ; argv[]=/usr/lib/systemd/systemd-user-runtime-dir start 1000 ; ignore_errors=no ; start_time=[Wed 2026-11-04 22:20:57 CET] ; stop_time=[Wed 2026-11-04 22:20:57 CET] ; pid=1618 ; code=exited ; status=0 }
+User=
+Id=user-runtime-dir@1000.service
+TriggeredBy=
+Description=User Runtime Directory /run/user/1000
+ActiveState=active
+SubState=exited
+FragmentPath=/usr/lib/systemd/system/user-runtime-dir@.service
+UnitFileState=static
+
+Type=oneshot
+ExecStart={ path=systemd-tmpfiles ; argv[]=systemd-tmpfiles --clean ; ignore_errors=no ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }
+User=
+Id=systemd-tmpfiles-clean.service
+TriggeredBy=systemd-tmpfiles-clean.timer
+Description=Cleanup of Temporary Directories
+ActiveState=inactive
+SubState=dead
+FragmentPath=/usr/lib/systemd/system/systemd-tmpfiles-clean.service
+UnitFileState=static
+
+Type=oneshot
+User=
+Id=systemd-poweroff.service
+TriggeredBy=
+Description=System Power Off
+ActiveState=inactive
+SubState=dead
+FragmentPath=/usr/lib/systemd/system/systemd-poweroff.service
+UnitFileState=static
+
+Type=
+User=
+Id=systemd-oomd.service
+TriggeredBy=
+Description=systemd-oomd.service
+ActiveState=inactive
+SubState=dead
+FragmentPath=
+UnitFileState=
+
+Type=oneshot
+ExecStart={ path=/lib/apparmor/apparmor.systemd ; argv[]=/lib/apparmor/apparmor.systemd reload ; ignore_errors=no ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }
+User=
+Id=apparmor.service
+TriggeredBy=
+Description=Load AppArmor profiles
+ActiveState=inactive
+SubState=dead
+FragmentPath=/usr/lib/systemd/system/apparmor.service
+UnitFileState=enabled
+
+Type=oneshot
+ExecStart={ path=sh ; argv[]=sh -c echo "start" | nc -Uu -W1 /run/cloud-init/share/config.sock -s /run/cloud-init/share/config-return.sock | sh ; ignore_errors=no ; start_time=[Wed 2026-11-04 22:20:55 CET] ; stop_time=[Wed 2026-11-04 22:20:56 CET] ; pid=1512 ; code=exited ; status=0 }
+User=
+Id=cloud-config.service
+TriggeredBy=
+Description=Cloud-init: Config Stage
+ActiveState=active
+SubState=exited
+FragmentPath=/usr/lib/systemd/system/cloud-config.service
+UnitFileState=enabled
+
+Type=oneshot
+ExecStart={ path=/usr/local/sbin/backup-pi-websites-to-nas ; argv[]=/usr/local/sbin/backup-pi-websites-to-nas ; ignore_errors=no ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }
+User=
+Id=pi-websites-backup.service
+TriggeredBy=pi-websites-backup.timer
+Description=Weekly backup of Pi website files and Nginx site configs to NAS
+ActiveState=inactive
+SubState=dead
+FragmentPath=/etc/systemd/system/pi-websites-backup.service
+UnitFileState=static
+
+Type=notify
+ExecStart={ path=/usr/sbin/sshd ; argv[]=/usr/sbin/sshd -D $SSHD_OPTS ; ignore_errors=no ; start_time=[Wed 2026-11-04 22:20:49 CET] ; stop_time=[n/a] ; pid=1250 ; code=(null) ; status=0/0 }
+User=
+Id=ssh.service
+TriggeredBy=
+Description=OpenBSD Secure Shell server
+ActiveState=active
+SubState=running
+FragmentPath=/usr/lib/systemd/system/ssh.service
+UnitFileState=enabled
+
+Type=oneshot
+ExecStart={ path=/sbin/e2scrub_all ; argv[]=/sbin/e2scrub_all ; ignore_errors=no ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }
+User=
+Id=e2scrub_all.service
+TriggeredBy=e2scrub_all.timer
+Description=Online ext4 Metadata Check for All Filesystems
+ActiveState=inactive
+SubState=dead
+FragmentPath=/usr/lib/systemd/system/e2scrub_all.service
+UnitFileState=static
+
+Type=oneshot
+ExecStart={ path=/usr/sbin/nft ; argv[]=/usr/sbin/nft -f /etc/nftables.d/orbit.nft ; ignore_errors=no ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }
+User=
+Id=orbit-firewall.service
+TriggeredBy=
+Description=ORBIT-Firewall (nftables-Tabelle inet orbit)
+ActiveState=active
+SubState=exited
+FragmentPath=/etc/systemd/system/orbit-firewall.service
+UnitFileState=enabled
+
+Type=oneshot
+ExecStart={ path=/usr/lib/systemd/systemd-update-done ; argv[]=/usr/lib/systemd/systemd-update-done ; ignore_errors=no ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }
+User=
+Id=systemd-update-done.service
+TriggeredBy=
+Description=Update is Completed
+ActiveState=inactive
+SubState=dead
+FragmentPath=/usr/lib/systemd/system/systemd-update-done.service
+UnitFileState=static
+
+Type=
+User=
+Id=systemd-quotacheck.service
+TriggeredBy=
+Description=systemd-quotacheck.service
+ActiveState=inactive
+SubState=dead
+FragmentPath=
+UnitFileState=
+
+Type=oneshot
+ExecStart={ path=journalctl ; argv[]=journalctl --update-catalog ; ignore_errors=no ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }
+User=
+Id=systemd-journal-catalog-update.service
+TriggeredBy=
+Description=Rebuild Journal Catalog
+ActiveState=inactive
+SubState=dead
+FragmentPath=/usr/lib/systemd/system/systemd-journal-catalog-update.service
+UnitFileState=static
+
+Type=oneshot
+ExecStart={ path=/opt/restore-probe/venv/bin/restore-probe ; argv[]=/opt/restore-probe/venv/bin/restore-probe backup ; ignore_errors=no ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }
+User=
+Id=restic-backup.service
+TriggeredBy=restic-backup.timer
+Description=Restore Probe: restic backup of services without a backup of their own
+ActiveState=inactive
+SubState=dead
+FragmentPath=/etc/systemd/system/restic-backup.service
+UnitFileState=disabled
+
+Type=oneshot
+ExecStart={ path=systemd-firstboot ; argv[]=systemd-firstboot --prompt-locale --prompt-keymap --prompt-timezone --prompt-root-password ; ignore_errors=no ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }
+User=
+Id=systemd-firstboot.service
+TriggeredBy=
+Description=First Boot Wizard
+ActiveState=inactive
+SubState=dead
+FragmentPath=/usr/lib/systemd/system/systemd-firstboot.service
+UnitFileState=static
+
+Type=oneshot
+ExecStart={ path=systemd-tmpfiles ; argv[]=systemd-tmpfiles --prefix=/dev --create --boot ; ignore_errors=no ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }
+User=
+Id=systemd-tmpfiles-setup-dev.service
+TriggeredBy=
+Description=Create Static Device Nodes in /dev
+ActiveState=active
+SubState=exited
+FragmentPath=/usr/lib/systemd/system/systemd-tmpfiles-setup-dev.service
+UnitFileState=static
+
+Type=simple
+ExecStart={ path=/usr/bin/prometheus-node-exporter ; argv[]=/usr/bin/prometheus-node-exporter $ARGS ; ignore_errors=no ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }
+User=prometheus
+Id=prometheus-node-exporter.service
+TriggeredBy=
+Description=Prometheus exporter for machine metrics
+ActiveState=active
+SubState=running
+FragmentPath=/usr/lib/systemd/system/prometheus-node-exporter.service
+UnitFileState=enabled
+
+Type=
+User=
+Id=postgresql.service
+TriggeredBy=
+Description=postgresql.service
+ActiveState=inactive
+SubState=dead
+FragmentPath=
+UnitFileState=
+
+Type=oneshot
+ExecStart={ path=systemd-tmpfiles ; argv[]=systemd-tmpfiles --create --remove --boot --exclude-prefix=/dev ; ignore_errors=no ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }
+User=
+Id=systemd-tmpfiles-setup.service
+TriggeredBy=
+Description=Create System Files and Directories
+ActiveState=active
+SubState=exited
+FragmentPath=/usr/lib/systemd/system/systemd-tmpfiles-setup.service
+UnitFileState=static
+
+Type=
+User=
+Id=gssproxy.service
+TriggeredBy=
+Description=gssproxy.service
+ActiveState=inactive
+SubState=dead
+FragmentPath=
+UnitFileState=
+
+Type=oneshot
+ExecStart={ path=/usr/lib/systemd/systemd-pstore ; argv[]=/usr/lib/systemd/systemd-pstore ; ignore_errors=no ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }
+User=
+Id=systemd-pstore.service
+TriggeredBy=
+Description=Platform Persistent Storage Archival
+ActiveState=inactive
+SubState=dead
+FragmentPath=/usr/lib/systemd/system/systemd-pstore.service
+UnitFileState=enabled
+
+Type=notify
+ExecStart={ path=/usr/bin/cloud-init ; argv[]=/usr/bin/cloud-init --all-stages ; ignore_errors=no ; start_time=[Wed 2026-11-04 22:20:31 CET] ; stop_time=[Wed 2026-11-04 22:21:46 CET] ; pid=601 ; code=exited ; status=0 }
+User=
+Id=cloud-init-main.service
+TriggeredBy=
+Description=Cloud-init: Single Process
+ActiveState=inactive
+SubState=dead
+FragmentPath=/usr/lib/systemd/system/cloud-init-main.service
+UnitFileState=enabled
+
+Type=oneshot
+ExecStart={ path=/usr/bin/python3 ; argv[]=/usr/bin/python3 /opt/orbit-security/scan.py quick ; ignore_errors=no ; start_time=[Wed 2026-11-04 22:23:56 CET] ; stop_time=[Wed 2026-11-04 22:24:24 CET] ; pid=4936 ; code=exited ; status=0 }
+User=
+Id=orbit-security@quick.service
+TriggeredBy=orbit-security-quick.timer
+Description=ORBIT security center - check (quick)
+ActiveState=inactive
+SubState=dead
+FragmentPath=/etc/systemd/system/orbit-security@.service
+UnitFileState=static
+
+Type=oneshot
+ExecStart={ path=systemd-tmpfiles ; argv[]=systemd-tmpfiles --prefix=/dev --create --boot --graceful ; ignore_errors=no ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }
+User=
+Id=systemd-tmpfiles-setup-dev-early.service
+TriggeredBy=
+Description=Create Static Device Nodes in /dev gracefully
+ActiveState=active
+SubState=exited
+FragmentPath=/usr/lib/systemd/system/systemd-tmpfiles-setup-dev-early.service
+UnitFileState=static
+
+Type=
+User=
+Id=ovsdb-server.service
+TriggeredBy=
+Description=ovsdb-server.service
+ActiveState=inactive
+SubState=dead
+FragmentPath=
+UnitFileState=
+
+Type=notify
+ExecStart={ path=/usr/bin/dbus-daemon ; argv[]=/usr/bin/dbus-daemon --system --address=systemd: --nofork --nopidfile --systemd-activation --syslog-only ; ignore_errors=no ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }
+User=messagebus
+Id=dbus.service
+TriggeredBy=dbus.socket
+Description=D-Bus System Message Bus
+ActiveState=active
+SubState=running
+FragmentPath=/usr/lib/systemd/system/dbus.service
+UnitFileState=static
+
+Type=notify-reload
+ExecStart={ path=/usr/lib/polkit-1/polkitd ; argv[]=/usr/lib/polkit-1/polkitd --no-debug --log-level=notice ; ignore_errors=no ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }
+User=polkitd
+Id=polkit.service
+TriggeredBy=
+Description=Authorization Manager
+ActiveState=active
+SubState=running
+FragmentPath=/usr/lib/systemd/system/polkit.service
+UnitFileState=static
+
+Type=forking
+ExecStart={ path=/usr/sbin/nginx ; argv[]=/usr/sbin/nginx -g daemon on; master_process on; ; ignore_errors=no ; start_time=[Wed 2026-11-04 22:20:58 CET] ; stop_time=[Wed 2026-11-04 22:20:58 CET] ; pid=1776 ; code=exited ; status=0 }
+User=
+Id=nginx.service
+TriggeredBy=
+Description=A high performance web server and a reverse proxy server
+ActiveState=active
+SubState=running
+FragmentPath=/usr/lib/systemd/system/nginx.service
+UnitFileState=enabled
+
+Type=oneshot
+ExecStart={ path=/usr/libexec/ipvsadm/ipvsadm-start ; argv[]=/usr/libexec/ipvsadm/ipvsadm-start ; ignore_errors=no ; start_time=[Wed 2026-11-04 22:20:48 CET] ; stop_time=[Wed 2026-11-04 22:20:48 CET] ; pid=1225 ; code=exited ; status=0 }
+User=
+Id=ipvsadm.service
+TriggeredBy=
+Description=Linux Virtual Server administration daemon
+ActiveState=active
+SubState=exited
+FragmentPath=/usr/lib/systemd/system/ipvsadm.service
+UnitFileState=enabled
+
+Type=notify
+ExecStart={ path=/usr/sbin/smartd ; argv[]=/usr/sbin/smartd -n $smartd_opts ; ignore_errors=no ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }
+User=
+Id=smartmontools.service
+TriggeredBy=
+Description=Self Monitoring and Reporting Technology (SMART) Daemon
+ActiveState=failed
+SubState=failed
+FragmentPath=/usr/lib/systemd/system/smartmontools.service
+UnitFileState=enabled
+
+Type=oneshot
+ExecStart={ path=/usr/bin/ssh-keygen ; argv[]=/usr/bin/ssh-keygen -A ; ignore_errors=no ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }
+User=
+Id=regenerate_ssh_host_keys.service
+TriggeredBy=
+Description=Regenerate SSH host keys
+ActiveState=inactive
+SubState=dead
+FragmentPath=/usr/lib/systemd/system/regenerate_ssh_host_keys.service
+UnitFileState=enabled
+
+Type=forking
+ExecStart={ path=/usr/sbin/sm-notify ; argv[]=/usr/sbin/sm-notify ; ignore_errors=yes ; start_time=[Wed 2026-11-04 22:20:58 CET] ; stop_time=[Wed 2026-11-04 22:20:58 CET] ; pid=1722 ; code=exited ; status=0 }
+User=
+Id=rpc-statd-notify.service
+TriggeredBy=
+Description=Notify NFS peers of a restart
+ActiveState=active
+SubState=exited
+FragmentPath=/usr/lib/systemd/system/rpc-statd-notify.service
+UnitFileState=static
+
+Type=oneshot
+ExecStart={ path=/usr/lib/systemd/scripts/glamor_test.sh ; argv[]=/usr/lib/systemd/scripts/glamor_test.sh ; ignore_errors=no ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }
+User=
+Id=glamor-test.service
+TriggeredBy=
+Description=Check for glamor
+ActiveState=active
+SubState=exited
+FragmentPath=/usr/lib/systemd/system/glamor-test.service
+UnitFileState=enabled
+
+Type=oneshot
+ExecStart={ path=/usr/lib/systemd/systemd-user-sessions ; argv[]=/usr/lib/systemd/systemd-user-sessions start ; ignore_errors=no ; start_time=[Wed 2026-11-04 22:20:56 CET] ; stop_time=[Wed 2026-11-04 22:20:56 CET] ; pid=1541 ; code=exited ; status=0 }
+User=
+Id=systemd-user-sessions.service
+TriggeredBy=
+Description=Permit User Sessions
+ActiveState=active
+SubState=exited
+FragmentPath=/usr/lib/systemd/system/systemd-user-sessions.service
+UnitFileState=static
+
+Type=oneshot
+ExecStart={ path=systemd-machine-id-setup ; argv[]=systemd-machine-id-setup --commit ; ignore_errors=no ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }
+User=
+Id=systemd-machine-id-commit.service
+TriggeredBy=
+Description=Save Transient machine-id to Disk
+ActiveState=inactive
+SubState=dead
+FragmentPath=/usr/lib/systemd/system/systemd-machine-id-commit.service
+UnitFileState=static
+
+Type=simple
+ExecStart={ path=/opt/asf/ArchiSteamFarm ; argv[]=/opt/asf/ArchiSteamFarm ; ignore_errors=no ; start_time=[Wed 2026-11-04 22:20:48 CET] ; stop_time=[n/a] ; pid=1195 ; code=(null) ; status=0/0 }
+User=pi
+Id=archisteamfarm.service
+TriggeredBy=
+Description=ArchiSteamFarm
+ActiveState=active
+SubState=running
+FragmentPath=/etc/systemd/system/archisteamfarm.service
+UnitFileState=enabled
+
+Type=oneshot
+ExecStart={ path=/bin/bash ; argv[]=/bin/bash -c read args <&3; echo "args=$args";                          exec /usr/bin/cloud-init devel hotplug-hook $args;                          exit 0 ; ignore_errors=no ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }
+User=
+Id=cloud-init-hotplugd.service
+TriggeredBy=cloud-init-hotplugd.socket
+Description=Cloud-init: Hotplug Hook
+ActiveState=inactive
+SubState=dead
+FragmentPath=/usr/lib/systemd/system/cloud-init-hotplugd.service
+UnitFileState=static
+
+Type=oneshot
+ExecStart={ path=/usr/sbin/alsactl ; argv[]=/usr/sbin/alsactl -E HOME=/run/alsa -E XDG_RUNTIME_DIR=/run/alsa/runtime restore ; ignore_errors=yes ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }
+User=
+Id=alsa-restore.service
+TriggeredBy=
+Description=Save/Restore Sound Card State
+ActiveState=active
+SubState=exited
+FragmentPath=/usr/lib/systemd/system/alsa-restore.service
+UnitFileState=static
+
+Type=oneshot
+ExecStart={ path=/usr/lib/systemd/systemd-remount-fs ; argv[]=/usr/lib/systemd/systemd-remount-fs ; ignore_errors=no ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }
+User=
+Id=systemd-remount-fs.service
+TriggeredBy=
+Description=Remount Root and Kernel File Systems
+ActiveState=active
+SubState=exited
+FragmentPath=/usr/lib/systemd/system/systemd-remount-fs.service
+UnitFileState=enabled-runtime
+
+Type=oneshot
+ExecStart={ path=ssh-keygen ; argv[]=ssh-keygen -A ; ignore_errors=no ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }
+User=
+Id=sshd-keygen.service
+TriggeredBy=
+Description=Generate sshd host keys on first boot
+ActiveState=inactive
+SubState=dead
+FragmentPath=/usr/lib/systemd/system/sshd-keygen.service
+UnitFileState=enabled
+
+Type=oneshot
+ExecStart={ path=/usr/lib/systemd/systemd-modules-load ; argv[]=/usr/lib/systemd/systemd-modules-load ; ignore_errors=no ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }
+User=
+Id=systemd-modules-load.service
+TriggeredBy=
+Description=Load Kernel Modules
+ActiveState=active
+SubState=exited
+FragmentPath=/usr/lib/systemd/system/systemd-modules-load.service
+UnitFileState=static
+
+Type=oneshot
+ExecStart={ path=systemd-sysusers ; argv[]=systemd-sysusers ; ignore_errors=no ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }
+User=
+Id=systemd-sysusers.service
+TriggeredBy=
+Description=Create System Users
+ActiveState=inactive
+SubState=dead
+FragmentPath=/usr/lib/systemd/system/systemd-sysusers.service
+UnitFileState=static
+
+Type=
+User=
+Id=console-screen.service
+TriggeredBy=
+Description=console-screen.service
+ActiveState=inactive
+SubState=dead
+FragmentPath=
+UnitFileState=
+
+Type=oneshot
+ExecStart={ path=/opt/restore-probe/app/scripts/restore-probe-failed.sh ; argv[]=/opt/restore-probe/app/scripts/restore-probe-failed.sh restore-probe.service ; ignore_errors=no ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }
+User=
+Id=restore-probe-failed@restore-probe.service.service
+TriggeredBy=
+Description=Restore Probe: report that restore-probe.service itself crashed (dead-man's switch, part 1)
+ActiveState=inactive
+SubState=dead
+FragmentPath=/etc/systemd/system/restore-probe-failed@.service
+UnitFileState=static
+
+Type=
+User=
+Id=firewalld.service
+TriggeredBy=
+Description=firewalld.service
+ActiveState=inactive
+SubState=dead
+FragmentPath=
+UnitFileState=
+
+Type=
+User=
+Id=dracut-shutdown.service
+TriggeredBy=
+Description=dracut-shutdown.service
+ActiveState=inactive
+SubState=dead
+FragmentPath=
+UnitFileState=
+
+Type=oneshot
+ExecStart={ path=/usr/lib/raspberrypi-sys-mods/sshswitch ; argv[]=/usr/lib/raspberrypi-sys-mods/sshswitch ; ignore_errors=no ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }
+User=
+Id=sshswitch.service
+TriggeredBy=
+Description=Turn on SSH if /boot/ssh or /boot/firmware/ssh is present
+ActiveState=inactive
+SubState=dead
+FragmentPath=/usr/lib/systemd/system/sshswitch.service
+UnitFileState=enabled
+
+Type=idle
+ExecStart={ path=/usr/lib/systemd/systemd-sulogin-shell ; argv[]=/usr/lib/systemd/systemd-sulogin-shell emergency ; ignore_errors=yes ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }
+User=
+Id=emergency.service
+TriggeredBy=
+Description=Emergency Shell
+ActiveState=inactive
+SubState=dead
+FragmentPath=/usr/lib/systemd/system/emergency.service
+UnitFileState=static
+
+Type=
+User=
+Id=nfs-server.service
+TriggeredBy=
+Description=nfs-server.service
+ActiveState=inactive
+SubState=dead
+FragmentPath=
+UnitFileState=
+
+Type=notify
+ExecStart={ path=/usr/sbin/cupsd ; argv[]=/usr/sbin/cupsd -l ; ignore_errors=no ; start_time=[Wed 2026-11-04 22:20:48 CET] ; stop_time=[n/a] ; pid=1198 ; code=(null) ; status=0/0 }
+User=
+Id=cups.service
+TriggeredBy=cups.socket cups.path
+Description=CUPS Scheduler
+ActiveState=active
+SubState=running
+FragmentPath=/usr/lib/systemd/system/cups.service
+UnitFileState=enabled
+
+Type=oneshot
+ExecStart={ path=/usr/bin/plymouth ; argv[]=/usr/bin/plymouth quit ; ignore_errors=yes ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }
+User=
+Id=plymouth-quit.service
+TriggeredBy=
+Description=Terminate Plymouth Boot Screen
+ActiveState=inactive
+SubState=dead
+FragmentPath=/usr/lib/systemd/system/plymouth-quit.service
+UnitFileState=static
+
+Type=
+User=
+Id=kbd.service
+TriggeredBy=
+Description=kbd.service
+ActiveState=inactive
+SubState=dead
+FragmentPath=
+UnitFileState=
+
+Type=oneshot
+ExecStart={ path=/usr/sbin/nft ; argv[]=/usr/sbin/nft -f /etc/nftables.conf ; ignore_errors=no ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }
+User=
+Id=nftables.service
+TriggeredBy=
+Description=nftables
+ActiveState=inactive
+SubState=dead
+FragmentPath=/usr/lib/systemd/system/nftables.service
+UnitFileState=disabled
+
+Type=simple
+ExecStart={ path=/usr/bin/freshclam ; argv[]=/usr/bin/freshclam -d --foreground=true ; ignore_errors=no ; start_time=[Wed 2026-11-04 22:20:55 CET] ; stop_time=[n/a] ; pid=1511 ; code=(null) ; status=0/0 }
+User=
+Id=clamav-freshclam.service
+TriggeredBy=
+Description=ClamAV virus database updater
+ActiveState=active
+SubState=running
+FragmentPath=/usr/lib/systemd/system/clamav-freshclam.service
+UnitFileState=enabled
+
+Type=dbus
+ExecStart={ path=/usr/sbin/ModemManager ; argv[]=/usr/sbin/ModemManager ; ignore_errors=no ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }
+User=root
+Id=ModemManager.service
+TriggeredBy=
+Description=Modem Manager
+ActiveState=active
+SubState=running
+FragmentPath=/usr/lib/systemd/system/ModemManager.service
+UnitFileState=enabled
+
+Type=oneshot
+ExecStart={ path=/bin/sh ; argv[]=/bin/sh -c echo idle > /sys/block/zram0/writeback ; ignore_errors=no ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }
+User=
+Id=rpi-zram-writeback.service
+TriggeredBy=rpi-zram-writeback.timer
+Description=zram writeback service
+ActiveState=inactive
+SubState=dead
+FragmentPath=/usr/lib/systemd/system/rpi-zram-writeback.service
+UnitFileState=static
+
+Type=simple
+ExecStart={ path=/usr/bin/fail2ban-server ; argv[]=/usr/bin/fail2ban-server -xf start ; ignore_errors=no ; start_time=[Wed 2026-11-04 22:20:48 CET] ; stop_time=[n/a] ; pid=1200 ; code=(null) ; status=0/0 }
+User=
+Id=fail2ban.service
+TriggeredBy=
+Description=Fail2Ban Service
+ActiveState=active
+SubState=running
+FragmentPath=/usr/lib/systemd/system/fail2ban.service
+UnitFileState=enabled
+
+Type=
+User=
+Id=hv_kvp_daemon.service
+TriggeredBy=
+Description=hv_kvp_daemon.service
+ActiveState=inactive
+SubState=dead
+FragmentPath=
+UnitFileState=
+
+Type=simple
+ExecStart={ path=/usr/share/unattended-upgrades/unattended-upgrade-shutdown ; argv[]=/usr/share/unattended-upgrades/unattended-upgrade-shutdown --wait-for-signal ; ignore_errors=no ; start_time=[Wed 2026-11-04 22:20:48 CET] ; stop_time=[n/a] ; pid=1208 ; code=(null) ; status=0/0 }
+User=
+Id=unattended-upgrades.service
+TriggeredBy=
+Description=Unattended Upgrades Shutdown
+ActiveState=active
+SubState=running
+FragmentPath=/usr/lib/systemd/system/unattended-upgrades.service
+UnitFileState=enabled
+
+Type=simple
+ExecStart={ path=/usr/lib/systemd/systemd-bsod ; argv[]=/usr/lib/systemd/systemd-bsod --continuous ; ignore_errors=no ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }
+User=
+Id=systemd-bsod.service
+TriggeredBy=
+Description=Display Boot-Time Emergency Messages In Full Screen
+ActiveState=inactive
+SubState=dead
+FragmentPath=/usr/lib/systemd/system/systemd-bsod.service
+UnitFileState=static
+
+Type=oneshot
+ExecStart={ path=/usr/lib/systemd/systemd-pcrextend ; argv[]=/usr/lib/systemd/systemd-pcrextend --graceful enter-initrd ; ignore_errors=no ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }
+User=
+Id=systemd-pcrphase-initrd.service
+TriggeredBy=
+Description=TPM PCR Barrier (initrd)
+ActiveState=inactive
+SubState=dead
+FragmentPath=/usr/lib/systemd/system/systemd-pcrphase-initrd.service
+UnitFileState=static
+
+Type=forking
+ExecStart={ path=/usr/sbin/plymouthd ; argv[]=/usr/sbin/plymouthd --mode=boot --pid-file=/run/plymouth/pid --attach-to-session ; ignore_errors=no ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }
+User=
+Id=plymouth-start.service
+TriggeredBy=
+Description=Show Plymouth Boot Screen
+ActiveState=active
+SubState=exited
+FragmentPath=/usr/lib/systemd/system/plymouth-start.service
+UnitFileState=static
+
+Type=oneshot
+ExecStart={ path=/bin/sh ; argv[]=/bin/sh -o pipefail -c /usr/share/prometheus-node-exporter-collectors/nvme_metrics.py | sponge /var/lib/prometheus/node-exporter/nvme.prom ; ignore_errors=no ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }
+User=
+Id=prometheus-node-exporter-nvme.service
+TriggeredBy=prometheus-node-exporter-nvme.timer
+Description=Collect NVMe metrics for prometheus-node-exporter
+ActiveState=inactive
+SubState=dead
+FragmentPath=/usr/lib/systemd/system/prometheus-node-exporter-nvme.service
+UnitFileState=static
+
+Type=oneshot
+ExecStart={ path=/sbin/modprobe ; argv[]=/sbin/modprobe -abq fuse ; ignore_errors=yes ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }
+User=
+Id=modprobe@fuse.service
+TriggeredBy=
+Description=Load Kernel Module fuse
+ActiveState=inactive
+SubState=dead
+FragmentPath=/usr/lib/systemd/system/modprobe@.service
+UnitFileState=static
+
+Type=simple
+ExecStart={ path=systemd-tty-ask-password-agent ; argv[]=systemd-tty-ask-password-agent --watch --console ; ignore_errors=no ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }
+User=
+Id=systemd-ask-password-console.service
+TriggeredBy=systemd-ask-password-console.path
+Description=Dispatch Password Requests to Console
+ActiveState=inactive
+SubState=dead
+FragmentPath=/usr/lib/systemd/system/systemd-ask-password-console.service
+UnitFileState=static
+
+Type=forking
+ExecStart={ path=/usr/sbin/plymouthd ; argv[]=/usr/sbin/plymouthd --mode=shutdown --attach-to-session ; ignore_errors=no ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }
+User=
+Id=plymouth-poweroff.service
+TriggeredBy=
+Description=Show Plymouth Power Off Screen
+ActiveState=inactive
+SubState=dead
+FragmentPath=/usr/lib/systemd/system/plymouth-poweroff.service
+UnitFileState=static
+### TIMERS
+Unit=orbit-pihole-cert.service
+TimersCalendar={ OnCalendar=*-*-* 04:20:00 ; next_elapse=Thu 2026-11-05 04:20:00 CET }
+Id=orbit-pihole-cert.timer
+Description=ORBIT: check the Pi-hole certificate daily
+ActiveState=active
+UnitFileState=enabled
+
+Unit=prometheus-node-exporter-apt.service
+TimersMonotonic={ OnUnitActiveUSec=15min ; next_elapse=15min 11.216167s }
+TimersMonotonic={ OnBootUSec=0 ; next_elapse=0 }
+Id=prometheus-node-exporter-apt.timer
+Description=Run apt metrics collection every 15 minutes
+ActiveState=active
+UnitFileState=enabled
+
+Unit=prometheus-node-exporter-mellanox-hca-temp.service
+TimersMonotonic={ OnUnitActiveUSec=1min ; next_elapse=0 }
+TimersMonotonic={ OnBootUSec=0 ; next_elapse=0 }
+Id=prometheus-node-exporter-mellanox-hca-temp.timer
+Description=Run Mellanox HCA temperature collection every minute
+ActiveState=inactive
+UnitFileState=enabled
+
+Unit=orbit-security@malware.service
+TimersCalendar={ OnCalendar=Sat *-*-* 01:00:00 ; next_elapse=Sat 2026-11-07 01:00:00 CET }
+Id=orbit-security-malware.timer
+Description=ORBIT security center - malware scan and hardening audit Saturdays 01:00
+ActiveState=active
+UnitFileState=enabled
+
+Unit=orbit-security@full.service
+TimersCalendar={ OnCalendar=*-*-* 02:15:00 ; next_elapse=Thu 2026-11-05 02:15:00 CET }
+Id=orbit-security-full.timer
+Description=ORBIT security center - full network check daily 02:15
+ActiveState=active
+UnitFileState=enabled
+
+Unit=prometheus-node-exporter-nvme.service
+TimersMonotonic={ OnUnitActiveUSec=15min ; next_elapse=0 }
+TimersMonotonic={ OnBootUSec=0 ; next_elapse=0 }
+Id=prometheus-node-exporter-nvme.timer
+Description=Run NVMe metrics collection every 15 minutes
+ActiveState=inactive
+UnitFileState=enabled
+
+Unit=orbit-security@quick.service
+TimersMonotonic={ OnBootUSec=3min ; next_elapse=3min }
+TimersCalendar={ OnCalendar=*-*-* *:00/15:00 ; next_elapse=Wed 2026-11-04 22:30:00 CET }
+Id=orbit-security-quick.timer
+Description=ORBIT security center - quick check every 15 minutes
+ActiveState=active
+UnitFileState=enabled
+
+Unit=apt-daily.service
+TimersCalendar={ OnCalendar=*-*-* 06,18:00:00 ; next_elapse=Thu 2026-11-05 06:00:00 CET }
+Id=apt-daily.timer
+Description=Daily apt download activities
+ActiveState=active
+UnitFileState=enabled
+
+Unit=e2scrub_all.service
+TimersCalendar={ OnCalendar=Sun *-*-* 03:10:00 ; next_elapse=Sun 2026-11-08 03:10:00 CET }
+Id=e2scrub_all.timer
+Description=Periodic ext4 Online Metadata Check for All Filesystems
+ActiveState=active
+UnitFileState=enabled
+
+Unit=logrotate.service
+TimersCalendar={ OnCalendar=*-*-* 00:00:00 ; next_elapse=Thu 2026-11-05 00:00:00 CET }
+Id=logrotate.timer
+Description=Daily rotation of log files
+ActiveState=active
+UnitFileState=enabled
+
+Unit=lynis.service
+TimersCalendar={ OnCalendar=*-*-* 00:00:00 ; next_elapse=Thu 2026-11-05 00:00:00 CET }
+Id=lynis.timer
+Description=Daily timer for the Lynis security audit and vulnerability scanner
+ActiveState=active
+UnitFileState=enabled
+
+Unit=orbit-network-doc-scan.service
+TimersCalendar={ OnCalendar=*-*-* 03:30:00 ; next_elapse=Thu 2026-11-05 03:30:00 CET }
+Id=orbit-network-doc-scan.timer
+Description=Daily network documentation discovery and change capture
+ActiveState=active
+UnitFileState=enabled
+
+Unit=dpkg-db-backup.service
+TimersCalendar={ OnCalendar=*-*-* 00:00:00 ; next_elapse=Thu 2026-11-05 00:00:00 CET }
+Id=dpkg-db-backup.timer
+Description=Daily dpkg database backup timer
+ActiveState=active
+UnitFileState=enabled
+
+Unit=man-db.service
+TimersCalendar={ OnCalendar=*-*-* 00:00:00 ; next_elapse=Thu 2026-11-05 00:00:00 CET }
+Id=man-db.timer
+Description=Daily man-db regeneration
+ActiveState=active
+UnitFileState=enabled
+
+Unit=pi-websites-backup.service
+TimersCalendar={ OnCalendar=Sun *-*-* 03:30:00 ; next_elapse=Sun 2026-11-08 03:30:00 CET }
+Id=pi-websites-backup.timer
+Description=Run the Pi websites backup weekly
+ActiveState=active
+UnitFileState=enabled
+
+Unit=prometheus-node-exporter-ipmitool-sensor.service
+TimersMonotonic={ OnUnitActiveUSec=1min ; next_elapse=0 }
+TimersMonotonic={ OnBootUSec=0 ; next_elapse=0 }
+Id=prometheus-node-exporter-ipmitool-sensor.timer
+Description=Run ipmitool sensor metrics collection every minute
+ActiveState=inactive
+UnitFileState=enabled
+
+Unit=raspiBackup.service
+TimersCalendar={ OnCalendar=Sun *-*-* 06:00:00 ; next_elapse=Sun 2026-11-08 06:00:00 CET }
+Id=raspiBackup.timer
+Description=Timer for raspiBackup.service to start backup
+ActiveState=active
+UnitFileState=enabled
+
+Unit=apt-daily-upgrade.service
+TimersCalendar={ OnCalendar=*-*-* 06:00:00 ; next_elapse=Thu 2026-11-05 06:00:00 CET }
+Id=apt-daily-upgrade.timer
+Description=Daily apt upgrade and clean activities
+ActiveState=active
+UnitFileState=enabled
+
+Unit=restic-backup.service
+TimersCalendar={ OnCalendar=*-*-* 02:30:00 ; next_elapse=Thu 2026-11-05 02:30:00 CET }
+Id=restic-backup.timer
+Description=Restore Probe: nightly restic backup
+ActiveState=active
+UnitFileState=enabled
+
+Unit=orbit-ha-backup-nas.service
+TimersCalendar={ OnCalendar=*-*-* 06:30:00 ; next_elapse=Thu 2026-11-05 06:30:00 CET }
+Id=orbit-ha-backup-nas.timer
+Description=ORBIT: copy Home Assistant backups to the NAS daily
+ActiveState=active
+UnitFileState=enabled
+
+Unit=restore-probe.service
+TimersCalendar={ OnCalendar=*-*-* 08:00:00 ; next_elapse=Thu 2026-11-05 08:00:00 CET }
+Id=restore-probe.timer
+Description=Restore Probe daily (after the nightly backups have finished)
+ActiveState=active
+UnitFileState=enabled
+
+Unit=fstrim.service
+TimersCalendar={ OnCalendar=Mon *-*-* 00:00:00 ; next_elapse=Mon 2026-11-09 00:00:00 CET }
+Id=fstrim.timer
+Description=Discard unused filesystem blocks once a week
+ActiveState=active
+UnitFileState=enabled
+
+Unit=rpi-zram-writeback.service
+TimersMonotonic={ OnUnitActiveUSec=1d ; next_elapse=0 }
+TimersMonotonic={ OnBootUSec=3h ; next_elapse=3h }
+Id=rpi-zram-writeback.timer
+Description=zram writeback timer
+ActiveState=active
+UnitFileState=generated
+
+Unit=prometheus-node-exporter-smartmon.service
+TimersMonotonic={ OnUnitActiveUSec=15min ; next_elapse=0 }
+TimersMonotonic={ OnBootUSec=0 ; next_elapse=0 }
+Id=prometheus-node-exporter-smartmon.timer
+Description=Run smart metrics collection every 15 minutes
+ActiveState=inactive
+UnitFileState=enabled
+
+Unit=systemd-tmpfiles-clean.service
+TimersMonotonic={ OnUnitActiveUSec=1d ; next_elapse=0 }
+TimersMonotonic={ OnBootUSec=15min ; next_elapse=15min }
+Id=systemd-tmpfiles-clean.timer
+Description=Daily Cleanup of Temporary Directories
+ActiveState=active
+UnitFileState=static

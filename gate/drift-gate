@@ -1,0 +1,98 @@
+#!/bin/bash
+# Homelab-Drift gate - runs on every monitored host.
+#
+# The only command the SSH key of user "drift" may run (forced command in authorized_keys, via drift-ssh and sudo).
+# It knows a fixed list of verbs that ONLY READ. There are no arguments; nothing from the request is evaluated or passed
+# to a shell. Anything else is rejected and logged via logger (tag homelab-drift-gate).
+#
+# Usage: drift-gate <verb>        verbs: ping system docker ports nginx cron systemd storage tailscale
+# Exit codes: 0 ok · 3 tool not present on this host · 64 verb rejected · anything else: error of the command
+set -u
+export LC_ALL=C PATH=/usr/sbin:/usr/bin:/sbin:/bin
+GATE_VERSION=1
+T="timeout 25"
+
+reject() {
+  logger -t homelab-drift-gate -p auth.warning "rejected: $(printf '%q' "$1")" 2>/dev/null || true
+  echo "homelab-drift-gate: command not allowed" >&2
+  exit 64
+}
+need() { command -v "$1" >/dev/null 2>&1 || { echo "unavailable: $1 not installed" >&2; exit 3; }; }
+# Print a file with a header line (regular files or symlinks to them only)
+dump() { [ -f "$1" ] && [ -r "$1" ] && { printf '### FILE %s\n' "$1"; cat -- "$1"; printf '\n'; }; return 0; }
+
+VERB="${1-}"
+[ $# -le 1 ] || reject "$*"
+
+case "$VERB" in
+  ping)
+    echo "ok gate=$GATE_VERSION host=$(hostname)" ;;
+
+  system)
+    printf 'hostname=%s\n' "$(hostname)"
+    printf 'kernel=%s\n' "$(uname -r)"
+    printf 'arch=%s\n' "$(uname -m)"
+    . /etc/os-release 2>/dev/null && printf 'os=%s\n' "${PRETTY_NAME-}"
+    awk '/^btime/ {print "boot_time="$2}' /proc/stat
+    printf 'uptime=%s\n' "$(cut -d' ' -f1 /proc/uptime)"
+    printf 'cpus=%s\n' "$(nproc)"
+    awk '/^MemTotal/ {print "mem_kb="$2}' /proc/meminfo
+    printf 'gate=%s\n' "$GATE_VERSION" ;;
+
+  docker)
+    # Selected fields only - deliberately WITHOUT Config.Env (often holds passwords), Cmd and Entrypoint.
+    need docker
+    ids=$($T docker ps -a -q --no-trunc) || exit 1
+    CF='{"Name":{{json .Name}},"Image":{{json .Image}},"Config":{"Image":{{json .Config.Image}},"Labels":{{json .Config.Labels}}},"State":{"Status":{{json .State.Status}},"Running":{{json .State.Running}},"StartedAt":{{json .State.StartedAt}}{{if .State.Health}},"Health":{"Status":{{json .State.Health.Status}}}{{end}}},"HostConfig":{"RestartPolicy":{{json .HostConfig.RestartPolicy}},"NetworkMode":{{json .HostConfig.NetworkMode}},"PortBindings":{{json .HostConfig.PortBindings}},"Privileged":{{json .HostConfig.Privileged}}},"Mounts":[{{range $i, $m := .Mounts}}{{if $i}},{{end}}{"Type":{{json $m.Type}},"Name":{{json $m.Name}},"Source":{{json $m.Source}},"Destination":{{json $m.Destination}},"RW":{{json $m.RW}}}{{end}}],"NetworkSettings":{"Networks":{ {{- range $k, $v := .NetworkSettings.Networks}}{{json $k}}:{},{{end}}"_":{}}}}'
+    IF='{"Id":{{json .Id}},"RepoDigests":{{json .RepoDigests}},"Created":{{json .Created}},"Config":{"Labels":{{if .Config}}{{json (index .Config "Labels")}}{{else}}null{{end}}}}'
+    printf '{"containers":['
+    if [ -n "$ids" ]; then $T docker inspect --format "$CF" $ids | paste -sd, - || exit 1; fi
+    printf '],"images":['
+    imgs=$($T docker inspect --format '{{.Image}}' $ids 2>/dev/null | sort -u)
+    if [ -n "$imgs" ]; then $T docker image inspect --format "$IF" $imgs | paste -sd, - ; fi
+    printf ']}\n' ;;
+
+  ports)
+    need ss
+    printf '#range %s\n' "$(tr '\t' ' ' < /proc/sys/net/ipv4/ip_local_port_range)"
+    $T ss -tulpnH ;;
+
+  nginx)
+    [ -d /etc/nginx ] || { echo "unavailable: nginx not installed" >&2; exit 3; }
+    dump /etc/nginx/nginx.conf
+    for f in /etc/nginx/sites-enabled/* /etc/nginx/conf.d/*.conf; do dump "$f"; done ;;
+
+  cron)
+    dump /etc/crontab
+    for f in /etc/cron.d/*; do dump "$f"; done
+    for d in hourly daily weekly monthly; do
+      for f in /etc/cron.$d/*; do
+        [ -f "$f" ] && [ "$(basename "$f")" != ".placeholder" ] && printf '### RUNPARTS %s %s\n' "$d" "$(basename "$f")"
+      done
+    done
+    for f in /var/spool/cron/crontabs/* /var/spool/cron/*; do
+      [ -f "$f" ] || continue
+      printf '### USER %s\n' "$(basename "$f")"; cat -- "$f"; printf '\n'
+    done ;;
+
+  systemd)
+    need systemctl
+    [ -d /run/systemd/system ] || { echo "unavailable: host is not running systemd" >&2; exit 3; }
+    echo "### SERVICES"
+    $T systemctl show '*.service' --all -p Id -p Type -p User -p ActiveState -p SubState \
+       -p UnitFileState -p ExecStart -p Description -p FragmentPath -p TriggeredBy --no-pager || exit 1
+    echo "### TIMERS"
+    $T systemctl show '*.timer' --all -p Id -p Unit -p TimersCalendar -p TimersMonotonic \
+       -p UnitFileState -p ActiveState -p Description --no-pager || exit 1 ;;
+
+  storage)
+    need findmnt
+    $T findmnt -J -b --real -o TARGET,SOURCE,FSTYPE,OPTIONS,SIZE,USED,AVAIL ;;
+
+  tailscale)
+    need tailscale
+    $T tailscale status --json ;;
+
+  *)
+    reject "$VERB" ;;
+esac

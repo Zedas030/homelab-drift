@@ -1,0 +1,12 @@
+#!/bin/bash
+# Homelab-Drift: forced command for the SSH key of user "drift".
+# Passes only the requested verb on to the gate (via sudo; sudoers allows exactly these verbs).
+# Anything that is not a single lower-case word is rejected right here.
+set -u
+CMD="${SSH_ORIGINAL_COMMAND-}"
+if [[ ! "$CMD" =~ ^[a-z]{2,16}$ ]]; then
+  logger -t homelab-drift-gate -p auth.warning "rejected (ssh): $(printf '%q' "$CMD")" 2>/dev/null || true
+  echo "homelab-drift-gate: command not allowed" >&2
+  exit 64
+fi
+exec sudo -n /usr/local/lib/homelab-drift/drift-gate "$CMD"

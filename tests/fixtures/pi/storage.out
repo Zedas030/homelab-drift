@@ -1,0 +1,32 @@
+{
+   "filesystems": [
+      {
+         "target": "/",
+         "source": "/dev/mmcblk0p2",
+         "fstype": "ext4",
+         "options": "rw,noatime",
+         "size": 125365538816,
+         "used": 41457672192,
+         "avail": 78733983744,
+         "children": [
+            {
+               "target": "/mnt/nas-share",
+               "source": "//192.0.2.128/pi-share",
+               "fstype": "cifs",
+               "options": "rw,relatime,vers=3.0,cache=strict,upcall_target=app,username=nas-user,uid=1000,forceuid,gid=1000,forcegid,addr=192.0.2.128,file_mode=0755,dir_mode=0755,soft,nounix,serverino,mapposix,reparse=nfs,nativesocket,symlink=native,rsize=4194304,wsize=4194304,bsize=1048576,echo_interval=60,actimeo=1,closetimeo=1",
+               "size": 9909187887104,
+               "used": 3276395155456,
+               "avail": 6632792731648
+            },{
+               "target": "/boot/firmware",
+               "source": "/dev/mmcblk0p1",
+               "fstype": "vfat",
+               "options": "rw,relatime,fmask=0022,dmask=0022,codepage=437,iocharset=ascii,shortname=mixed,errors=remount-ro",
+               "size": 534763520,
+               "used": 82939904,
+               "avail": 451823616
+            }
+         ]
+      }
+   ]
+}

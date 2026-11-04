@@ -1,0 +1,42 @@
+[Unit]
+Description=Homelab-Drift: scan hosts, generate docs, report drift
+Documentation=file:///opt/homelab-drift/app/README.md
+After=network-online.target
+Wants=network-online.target
+OnFailure=homelab-drift-failed@%n.service
+
+[Service]
+Type=oneshot
+User=homelab-drift
+Group=homelab-drift
+ExecStart=/opt/homelab-drift/venv/bin/homelab-drift scan
+TimeoutStartSec=10min
+# Resources: a scan is lightweight and must never noticeably load the host
+Nice=10
+IOSchedulingClass=idle
+CPUQuota=50%
+MemoryHigh=192M
+MemoryMax=256M
+TasksMax=64
+# Hardening: runs as its own user and only writes to its own directories
+NoNewPrivileges=true
+PrivateTmp=true
+PrivateDevices=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/lib/homelab-drift /var/log/homelab-drift
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectKernelLogs=true
+ProtectControlGroups=true
+ProtectClock=true
+ProtectHostname=true
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+RestrictNamespaces=true
+RestrictRealtime=true
+RestrictSUIDSGID=true
+LockPersonality=true
+MemoryDenyWriteExecute=true
+SystemCallArchitectures=native
+CapabilityBoundingSet=
+UMask=0027

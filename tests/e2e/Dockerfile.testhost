@@ -1,0 +1,15 @@
+# Throw-away test host for the end-to-end test and for trying out a second host.
+# A slim Debian with sshd, cron and nginx. The gate is set up with exactly the same install-host.sh
+# that is used on a real host.
+FROM debian:trixie-slim
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends openssh-server sudo cron iproute2 nginx procps netcat-openbsd util-linux \
+ && rm -rf /var/lib/apt/lists/* \
+ && mkdir -p /run/sshd && ssh-keygen -A \
+ && echo '17 4 * * * root /usr/bin/true # test cron job' > /etc/cron.d/testhost
+COPY gate /src/gate
+COPY scripts/install-host.sh /src/scripts/install-host.sh
+ARG PUBKEY
+RUN /src/scripts/install-host.sh "$PUBKEY"
+EXPOSE 22
+CMD ["/bin/sh", "-c", "cron && nginx && exec /usr/sbin/sshd -D -e"]

@@ -1,0 +1,54 @@
+{
+  "Version": "1.104.5-t788384763-gd9218e278",
+  "BackendState": "Running",
+  "TailscaleIPs": [
+    "100.64.0.1",
+    "fd7a:115c:a1e0::1"
+  ],
+  "Self": {
+    "HostName": "pi-host",
+    "DNSName": "pi-host.tailnet-example.ts.net.",
+    "OS": "linux",
+    "TailscaleIPs": [
+      "100.64.0.1",
+      "fd7a:115c:a1e0::1"
+    ],
+    "Online": true,
+    "LastSeen": "0001-01-01T00:00:00Z"
+  },
+  "Peer": {
+    "nodekey:0": {
+      "HostName": "localhost",
+      "DNSName": "phone.tailnet-example.ts.net.",
+      "OS": "iOS",
+      "TailscaleIPs": [
+        "100.64.0.2",
+        "fd7a:115c:a1e0::2"
+      ],
+      "Online": true,
+      "LastSeen": "0001-01-01T00:00:00Z"
+    },
+    "nodekey:1": {
+      "HostName": "DESKTOP",
+      "DNSName": "desktop.tailnet-example.ts.net.",
+      "OS": "windows",
+      "TailscaleIPs": [
+        "100.64.0.3",
+        "fd7a:115c:a1e0::3"
+      ],
+      "Online": true,
+      "LastSeen": "0001-01-01T00:00:00Z"
+    },
+    "nodekey:2": {
+      "HostName": "localhost",
+      "DNSName": "tablet.tailnet-example.ts.net.",
+      "OS": "iOS",
+      "TailscaleIPs": [
+        "100.64.0.4",
+        "fd7a:115c:a1e0::4"
+      ],
+      "Online": true,
+      "LastSeen": "0001-01-01T00:00:00Z"
+    }
+  }
+}

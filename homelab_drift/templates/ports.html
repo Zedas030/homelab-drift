@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% from "_macros.html" import doc, exposure %}
+{% block title %}Ports – {{ cfg.title }}{% endblock %}
+{% block body %}
+<h1>Port overview</h1>
+<p class="sub">All listening ports on all hosts. "all interfaces" and "LAN" are reachable from the network, "local" only on the host itself.</p>
+<div class="box"><table>
+<tr><th>Port</th><th>Host</th><th>Exposure</th><th>Service</th><th>Note</th></tr>
+{% for p in ports %}
+<tr><td class="mono">{% if p.ephemeral %}{{ p.proto }} ephemeral{% else %}{{ p.port }}/{{ p.proto }}{% endif %}</td>
+<td><a href="host-{{ p.host|slug }}.html#ports">{{ p.host }}</a></td><td>{{ exposure(p.exposure) }}</td>
+<td>{% if p._service_link %}<a href="{{ p._service_link }}">{{ p._service }}</a>{% else %}{{ p._service }}{% endif %}</td><td>{{ doc(p) }}</td></tr>
+{% endfor %}
+</table></div>
+{% endblock %}

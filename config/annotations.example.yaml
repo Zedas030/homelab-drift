@@ -1,0 +1,23 @@
+# Homelab-Drift - your annotations
+# This file is yours: Homelab-Drift only reads it and never writes to it.
+#
+# Layout:   <host or "all">:
+#             _host: "note about the host"
+#             <collector>:          ports, docker, nginx, cron, systemd, storage, tailscale, fritzbox
+#               "<item>": "note"
+#               "<item>": {note: "...", known: true, until: 2026-12-31, reason: "..."}
+# Items are named as shown in the docs (e.g. tcp/8091, homeassistant, nginx.service).
+# A note makes an item "documented": changes to it are no longer "undocumented" and only go into the digest.
+# "known: true" acknowledges permanently (or until the date in "until"): no more alerts.
+# * and ? patterns are allowed, e.g. "udp/eph/*".
+
+pi:
+  _host: "Raspberry Pi"
+  ports:
+    tcp/22: "SSH (key only)"
+    tcp/8097: "nginx · Homelab-Drift (this documentation)"
+  systemd:
+    smartmontools.service: {note: "SD card has no SMART - never starts", known: true}
+all:
+  ports:
+    "udp/eph/*": {note: "ephemeral UDP ports (mDNS/SSDP replies, Tailscale)", known: true}

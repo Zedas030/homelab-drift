@@ -1,0 +1,293 @@
+### FILE /etc/nginx/nginx.conf
+user www-data;
+worker_processes auto;
+worker_cpu_affinity auto;
+pid /run/nginx.pid;
+error_log /var/log/nginx/error.log;
+include /etc/nginx/modules-enabled/*.conf;
+
+events {
+	worker_connections 768;
+	# multi_accept on;
+}
+
+http {
+
+	##
+	# Basic Settings
+	##
+
+	sendfile on;
+	tcp_nopush on;
+	types_hash_max_size 2048;
+	server_tokens off; # Recommended practice is to turn this off
+
+	# server_names_hash_bucket_size 64;
+	# server_name_in_redirect off;
+
+	include /etc/nginx/mime.types;
+	default_type application/octet-stream;
+
+	##
+	# SSL Settings
+	##
+
+	ssl_protocols TLSv1.2 TLSv1.3; # Dropping SSLv3 (POODLE), TLS 1.0, 1.1
+	ssl_prefer_server_ciphers off; # Don't force server cipher order.
+
+	##
+	# Logging Settings
+	##
+
+	access_log /var/log/nginx/access.log;
+
+	##
+	# Gzip Settings
+	##
+
+	gzip on;
+
+	# gzip_vary on;
+	# gzip_proxied any;
+	# gzip_comp_level 6;
+	# gzip_buffers 16 8k;
+	# gzip_http_version 1.1;
+	# gzip_types text/plain text/css application/json application/javascript text/xml application/xml application/xml+rss text/javascript;
+
+	##
+	# Virtual Host Configs
+	##
+
+	include /etc/nginx/conf.d/*.conf;
+	include /etc/nginx/sites-enabled/*;
+}
+
+
+#mail {
+#	# See sample authentication script at:
+#	# http://wiki.nginx.org/ImapAuthenticateWithApachePhpScript
+#
+#	# auth_http localhost/auth.php;
+#	# pop3_capabilities "TOP" "USER";
+#	# imap_capabilities "IMAP4rev1" "UIDPLUS";
+#
+#	server {
+#		listen     localhost:110;
+#		protocol   pop3;
+#		proxy      on;
+#	}
+#
+#	server {
+#		listen     localhost:143;
+#		protocol   imap;
+#		proxy      on;
+#	}
+#}
+
+### FILE /etc/nginx/sites-enabled/device-docs
+server {
+    listen 8094;
+    listen [::]:8094;
+    server_name _;
+    root /mnt/nas-share/network-docs/site;
+    index index.html;
+
+    location = /api/query {
+        limit_except GET { deny all; }
+        proxy_pass http://127.0.0.1:9090/api/v1/query;
+        proxy_set_header Host $host;
+        proxy_read_timeout 10s;
+        add_header Cache-Control "no-store" always;
+    }
+    location = /api/query_range {
+        limit_except GET { deny all; }
+        proxy_pass http://127.0.0.1:9090/api/v1/query_range;
+        proxy_set_header Host $host;
+        proxy_read_timeout 15s;
+        add_header Cache-Control "no-store" always;
+    }
+    location = /api/ha/summary {
+        limit_except GET { deny all; }
+        proxy_pass http://127.0.0.1:18095/ha/summary;
+        proxy_read_timeout 15s;
+        add_header Cache-Control "no-store" always;
+    }
+    location = /api/pihole/summary {
+        limit_except GET { deny all; }
+        proxy_pass http://127.0.0.1:18095/pihole/summary;
+        proxy_read_timeout 15s;
+        add_header Cache-Control "no-store" always;
+    }
+    location / {
+        try_files $uri $uri/ =404;
+        add_header X-Content-Type-Options nosniff always;
+        add_header Referrer-Policy same-origin always;
+        add_header Cache-Control "no-cache";
+    }
+}
+
+
+### FILE /etc/nginx/sites-enabled/monitoring
+server {
+    listen 8092;
+    listen [::]:8092;
+    server_name _;
+    root /var/www/monitoring;
+    index index.html;
+
+    location = /api/query {
+        limit_except GET { deny all; }
+        proxy_pass http://127.0.0.1:9090/api/v1/query;
+        proxy_set_header Host $host;
+        proxy_read_timeout 10s;
+        add_header Cache-Control "no-store" always;
+    }
+    location = /api/query_range {
+        limit_except GET { deny all; }
+        proxy_pass http://127.0.0.1:9090/api/v1/query_range;
+        proxy_set_header Host $host;
+        proxy_read_timeout 15s;
+        add_header Cache-Control "no-store" always;
+    }
+    location = /api/ha/summary {
+        limit_except GET { deny all; }
+        proxy_pass http://127.0.0.1:18095/ha/summary;
+        proxy_read_timeout 15s;
+        add_header Cache-Control "no-store" always;
+    }
+    location = /api/pihole/summary {
+        limit_except GET { deny all; }
+        proxy_pass http://127.0.0.1:18095/pihole/summary;
+        proxy_read_timeout 15s;
+        add_header Cache-Control "no-store" always;
+    }
+    location = /api/inventory {
+        limit_except GET { deny all; }
+        proxy_pass http://127.0.0.1:8094/atlas-data.json;
+        proxy_read_timeout 5s;
+        add_header Cache-Control "no-cache" always;
+    }
+    # --- ORBIT security center (inserted before "location /") ---
+    location = /api/security {
+        limit_except GET { deny all; }
+        alias /var/lib/orbit-security/report.json;
+        default_type application/json;
+        add_header Cache-Control "no-store" always;
+    }
+    location = /api/security/status {
+        limit_except GET { deny all; }
+        alias /var/lib/orbit-security/status.json;
+        default_type application/json;
+        add_header Cache-Control "no-store" always;
+    }
+    location ~ ^/api/security/run/(quick|full|malware)$ {
+        limit_except POST { deny all; }
+        proxy_pass http://127.0.0.1:18095/security/run/$1;
+        proxy_set_header X-Orbit $http_x_orbit;
+        proxy_read_timeout 10s;
+        add_header Cache-Control "no-store" always;
+    }
+    location = /api/security/accepted {
+        limit_except GET { deny all; }
+        alias /var/lib/orbit-security/exceptions/accepted.json;
+        default_type application/json;
+        add_header Cache-Control "no-store" always;
+    }
+    location ~ ^/api/security/(accept|unaccept)$ {
+        limit_except POST { deny all; }
+        client_max_body_size 4k;
+        proxy_pass http://127.0.0.1:18095/security/$1;
+        proxy_set_header X-Orbit $http_x_orbit;
+        proxy_read_timeout 10s;
+        add_header Cache-Control "no-store" always;
+    }
+    # --- Uptime Kuma: Statusseite \"jarvis\" nur lesend fuer die Uebersicht (eingefuegt 2026-10-29) ---
+    location = /api/kuma/status {
+        limit_except GET { deny all; }
+        proxy_pass http://127.0.0.1:3001/api/status-page/jarvis;
+        proxy_read_timeout 10s;
+        add_header Cache-Control "no-store" always;
+    }
+    location = /api/kuma/heartbeat {
+        limit_except GET { deny all; }
+        proxy_pass http://127.0.0.1:3001/api/status-page/heartbeat/jarvis;
+        proxy_read_timeout 10s;
+        add_header Cache-Control "no-store" always;
+    }
+    location / {
+        try_files $uri $uri/ =404;
+        add_header X-Content-Type-Options nosniff always;
+        add_header Referrer-Policy same-origin always;
+        add_header Cache-Control "no-cache";
+    }
+}
+
+
+### FILE /etc/nginx/sites-enabled/pv-dashboard
+server {
+    listen 8093;
+    listen [::]:8093;
+    server_name _;
+    root /var/www/pv-dashboard;
+    index index.html;
+
+    location / {
+        try_files $uri $uri/ =404;
+        add_header X-Content-Type-Options nosniff always;
+        add_header Referrer-Policy same-origin always;
+        add_header Cache-Control "no-cache";
+    }
+
+    location = /api/query {
+        limit_except GET { deny all; }
+        proxy_pass http://127.0.0.1:9090/api/v1/query;
+        proxy_set_header Host 127.0.0.1;
+    }
+
+    location = /api/query_range {
+        limit_except GET { deny all; }
+        proxy_pass http://127.0.0.1:9090/api/v1/query_range;
+        proxy_set_header Host 127.0.0.1;
+    }
+}
+### FILE /etc/nginx/sites-enabled/rack-demo
+# ORBIT Rack-Demo (statisch). Port 80/443/8080 sind auf diesem Pi belegt (Java-Dienst, Pi-hole).
+server {
+    listen 8090;
+    listen [::]:8090;
+    server_name _;
+    root /var/www/rack-demo;
+    index index.html;
+    location / { try_files $uri $uri/ /index.html; }
+    location ~* \.(css|js|json|svg)$ { expires 1h; add_header Cache-Control "public"; }
+    gzip on;
+    gzip_types text/css application/javascript application/json image/svg+xml;
+}
+
+### FILE /etc/nginx/sites-enabled/wiki
+server {
+    listen 8091;
+    listen [::]:8091;
+    server_name _;
+    root /var/www/wiki;
+    index index.html;
+    location / { try_files $uri $uri/ =404; }
+    gzip on;
+    gzip_types text/css application/javascript image/svg+xml;
+}
+
+### FILE /etc/nginx/sites-enabled/restore-probe
+# /etc/nginx/sites-available/restore-probe – Bericht von Restore-Probe (statisch, nur lesend)
+server {
+    listen 8096;
+    listen [::]:8096;
+    server_name _;
+    root /var/lib/restore-probe/www;
+    index index.html;
+    charset utf-8;
+    add_header Cache-Control "no-cache";
+    location / {
+        try_files $uri $uri/ =404;
+    }
+}
+

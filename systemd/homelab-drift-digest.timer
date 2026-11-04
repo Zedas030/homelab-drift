@@ -1,0 +1,10 @@
+[Unit]
+Description=Homelab-Drift: daily digest
+
+[Timer]
+# The time comes from config.yaml (notify.digest_time) via schedule.conf written by install.sh --schedule
+OnCalendar=*-*-* 19:00:00
+Persistent=true
+
+[Install]
+WantedBy=timers.target

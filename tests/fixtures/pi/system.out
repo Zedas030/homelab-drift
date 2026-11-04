@@ -1,0 +1,9 @@
+hostname=pi-host
+kernel=6.18.50+rpt-rpi-v8
+arch=aarch64
+os=Debian GNU/Linux 13 (trixie)
+boot_time=1793827238
+uptime=495.54
+cpus=4
+mem_kb=8007400
+gate=1

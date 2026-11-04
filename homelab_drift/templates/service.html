@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% from "_macros.html" import doc, exposure %}
+{% set i = s.item %}
+{% block title %}{{ i.id }} – {{ s.host }}{% endblock %}
+{% block body %}
+<p class="muted"><a href="host-{{ s.host|slug }}.html">{{ s.host }}</a> › {{ titles[s.collector] }}</p>
+<h1>{{ i.id }}</h1>
+<p class="sub">{{ doc(i) }}</p>
+<div class="box"><dl class="kv">
+{% for k, v in i.items() if not k.startswith('_') and k != 'id' %}
+<dt>{{ k }}</dt><dd class="mono">{% if v is iterable and v is not string %}{{ v|joinl('<br>')|safe if v else '–' }}{% else %}{{ v if v not in (none, '') else '–' }}{% endif %}</dd>
+{% endfor %}
+</dl></div>
+
+{% set related = ports|selectattr('host','equalto',s.host)|selectattr('_service_link','equalto',s.file)|list %}
+{% if related %}
+<h2>Ports</h2>
+<div class="box"><table><tr><th>Port</th><th>Exposure</th><th>Note</th></tr>
+{% for p in related %}<tr><td class="mono">{{ p.port }}/{{ p.proto }}</td><td>{{ exposure(p.exposure) }}</td><td>{{ doc(p) }}</td></tr>{% endfor %}
+</table></div>
+{% endif %}
+
+<h2>History</h2>
+{% if history %}
+<div class="box"><table><tr><th>Time</th><th>Change</th></tr>
+{% for e in history %}<tr><td class="mono">{{ e.ts|ts }}</td><td>{{ e.summary }}{% if e.details %}<div class="muted mono">{{ e.details }}</div>{% endif %}</td></tr>{% endfor %}
+</table></div>
+{% else %}<p class="muted">No changes since the initial inventory.</p>{% endif %}
+<p class="muted">Edit the note: <code>{{ cfg.annotations_file }}</code> → <code>{{ s.host }}: {{ s.collector }}: "{{ i.id }}": "…"</code></p>
+{% endblock %}

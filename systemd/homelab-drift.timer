@@ -1,0 +1,16 @@
+[Unit]
+Description=Homelab-Drift: periodic scan
+
+[Timer]
+# The interval comes from config.yaml (general.scan_interval_minutes) via the drop-in schedule.conf written by
+# install.sh --schedule. The values here only apply if the drop-in is missing.
+OnBootSec=3min
+# also start right after installing/restarting the timer (OnUnitActiveSec only counts from the first run)
+OnActiveSec=1min
+OnUnitActiveSec=15min
+# catch up on runs missed during a reboot or outage
+Persistent=true
+RandomizedDelaySec=30s
+
+[Install]
+WantedBy=timers.target

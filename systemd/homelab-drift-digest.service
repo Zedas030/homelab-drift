@@ -1,0 +1,29 @@
+[Unit]
+Description=Homelab-Drift: send the daily digest
+After=network-online.target
+Wants=network-online.target
+OnFailure=homelab-drift-failed@%n.service
+
+[Service]
+Type=oneshot
+User=homelab-drift
+Group=homelab-drift
+ExecStart=/opt/homelab-drift/venv/bin/homelab-drift digest
+TimeoutStartSec=5min
+Nice=10
+CPUQuota=50%
+MemoryMax=256M
+NoNewPrivileges=true
+PrivateTmp=true
+PrivateDevices=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/lib/homelab-drift /var/log/homelab-drift
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+RestrictSUIDSGID=true
+LockPersonality=true
+CapabilityBoundingSet=
+UMask=0027

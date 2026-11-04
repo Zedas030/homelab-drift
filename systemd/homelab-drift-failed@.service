@@ -1,0 +1,14 @@
+[Unit]
+Description=Homelab-Drift: failure notification for %i
+
+[Service]
+Type=oneshot
+User=homelab-drift
+Group=homelab-drift
+ExecStart=/opt/homelab-drift/venv/bin/homelab-drift notify-failure %i
+TimeoutStartSec=60
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/log/homelab-drift
+PrivateTmp=true

@@ -1,0 +1,20 @@
+{% macro sev(f) %}{% if f.severity == 'instant' %}<span class="chip bad">instant</span>{% else %}<span class="chip warn">digest</span>{% endif %}{% endmacro %}
+
+{% macro status(f) %}{% if f.status == 'open' %}<span class="chip bad">open</span>{% elif f.status == 'acknowledged' %}<span class="chip ok" title="{{ f.ack.reason if f.ack }}">acknowledged</span>{% else %}<span class="chip">{{ f.status }}</span>{% endif %}{% endmacro %}
+
+{% macro doc(i) %}{% if i._note %}<span class="note">{{ i._note }}</span>{% if i._known %} <span class="chip ok">known</span>{% endif %}{% elif i._known %}<span class="chip ok">known</span>{% else %}<span class="chip warn" title="No entry in annotations.yaml">undocumented</span>{% endif %}{% for f in i._findings %} <a class="chip {{ 'bad' if f.status=='open' else 'ok' }}" href="index.html#{{ f.id }}">{{ f.id }}</a>{% endfor %}{% endmacro %}
+
+{% macro exposure(e) %}{% if e == 'all' %}<span class="chip warn">all interfaces</span>{% elif e == 'LAN' %}<span class="chip warn">LAN</span>{% elif e == 'Tailscale' %}<span class="chip">Tailscale</span>{% else %}<span class="chip ok">{{ e }}</span>{% endif %}{% endmacro %}
+
+{% macro findings_table(rows, show_ack=false) %}
+<div class="box"><table>
+<tr><th>ID</th><th>Host</th><th>Finding</th><th class="hide-s">for</th><th>Severity</th><th>Status</th>{% if show_ack %}<th class="hide-s">Acknowledgement</th>{% endif %}</tr>
+{% for f in rows %}
+<tr id="{{ f.id }}"><td class="mono">{{ f.id }}</td><td>{{ f.host }}</td>
+<td>{{ f.title }}{% if f.details %}<div class="muted mono" style="margin-top:2px">{{ f.details }}</div>{% endif %}</td>
+<td class="hide-s">{{ f.first_seen|since }}</td><td>{{ sev(f) }}</td><td>{{ status(f) }}</td>
+{% if show_ack %}<td class="hide-s">{% if f.ack %}{{ f.ack.at|ts }} via {{ f.ack.via }}{% if f.ack.reason %} - {{ f.ack.reason }}{% endif %}{% if f.ack.until %} (until {{ f.ack.until }}){% endif %}{% endif %}</td>{% endif %}
+</tr>
+{% endfor %}
+</table></div>
+{% endmacro %}
