@@ -12,7 +12,10 @@ from collections import defaultdict
 from pathlib import Path
 from typing import Any
 
+from importlib import resources
+
 from jinja2 import Environment, PackageLoader, select_autoescape
+from markupsafe import Markup
 
 from . import __version__
 from .annotations import Annotations
@@ -25,6 +28,26 @@ COLLECTOR_ORDER = ["system", "docker", "ports", "nginx", "cron", "systemd", "sto
 SECTION_TITLES = {"docker": "Docker containers", "ports": "Listening ports", "nginx": "nginx sites", "cron": "Cron jobs",
                   "systemd": "systemd services and timers", "storage": "Mounts and storage", "tailscale": "Tailscale",
                   "fritzbox": "Devices on the network (FRITZ!Box)"}
+
+
+# Stroke icons (24x24) for the shared homelab theme: <svg class="i">
+ICONS = {
+    "brand": "M12 3l9 5-9 5-9-5 9-5zM3 12.5l9 5 9-5M3 17l9 5 9-5",
+    "overview": "M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z",
+    "server": "M4 4h16v6H4zM4 14h16v6H4zM8 7h.01M8 17h.01",
+    "router": "M5 12.5a10 10 0 0 1 14 0M8.5 16a5 5 0 0 1 7 0M12 19.5h.01",
+    "ports": "M9 2v6M15 2v6M6 8h12v3a6 6 0 0 1-12 0zM12 17v5",
+    "history": "M3 12a9 9 0 1 0 2.6-6.4L3 8M3 3v5h5M12 7v5l3 3",
+    "acceptance": "M9 3h6v3H9zM9 4.5H6V21h12V4.5h-3M9 13.5l2 2 4-4",
+    "alert": "M12 3.5l9.5 16.5h-19zM12 10v4M12 17h.01",
+    "check": "M20 6L9 17l-5-5",
+    "clock": "M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM12 7v5l3 2",
+}
+STATIC_FILES = ("homelab-theme.css", "drift.css")
+
+
+def icon(name: str) -> Markup:
+    return Markup('<svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="{}"/></svg>').format(ICONS[name])
 
 
 def slug(*parts: str) -> str:
@@ -80,6 +103,7 @@ class Renderer:
                                autoescape=select_autoescape(["html"]), trim_blocks=True, lstrip_blocks=True)
         self.env.filters.update(bytes=fmt_bytes, ts=fmt_ts, since=since, slug=slug, day=day,
                                 joinl=lambda v, sep=", ": sep.join(map(str, v)) if isinstance(v, list) else (v or ""))
+        self.env.globals["icon"] = icon
 
     # ------------------------------------------------------------------ Daten
     def current(self, host: str, collector: str) -> list[dict]:
@@ -163,6 +187,12 @@ class Renderer:
             write_atomic(path, self.env.get_template(tpl).render(**m, **kw))
             written.append(path)
 
+        # shared homelab theme + Homelab-Drift additions, referenced by every page as assets/*.css
+        assets = www / "assets"
+        assets.mkdir(exist_ok=True)
+        for name in STATIC_FILES:
+            write_atomic(assets / name, resources.files("homelab_drift").joinpath("static", name).read_text(encoding="utf-8"))
+            written.append(assets / name)
         out(www / "index.html", "index.html", page="index")
         out(www / "ports.html", "ports.html", page="ports")
         out(www / "changelog.html", "changelog.html", page="changelog")

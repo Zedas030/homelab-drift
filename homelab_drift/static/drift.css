@@ -1,0 +1,38 @@
+/* drift.css – Homelab-Drift additions on top of homelab-theme.css (theme variables only, no own colors). */
+.content > .note { margin: 0 0 12px; }
+.hero { margin-bottom: 16px; }
+.hero h2 { overflow-wrap: anywhere; }
+.hero code { font-size: 12px; }
+.tiles { margin-bottom: 8px; }
+.tile-val.sm { font-size: 20px; line-height: 1.2; overflow-wrap: anywhere; }
+.sec-h .count { color: var(--muted); font-weight: 400; }
+.sec-h p { flex-basis: 100%; margin: 0; color: var(--muted); font-size: 13px; }
+.crumb { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-bottom: 8px; color: var(--muted); font-size: 13px; }
+.card-b > .kv { padding: 2px 0; }
+.t td { overflow-wrap: anywhere; }
+.t td.mono, .t td .mono { font-size: 12.5px; }
+.t th.w-time { width: 80px; } .t th.w-host { width: 120px; }
+.t .sub-l { margin-top: 2px; color: var(--muted); font-size: 12.5px; }
+.t td code { word-break: break-all; }
+.t tr:target td { background: var(--accent-soft); }
+.t .pill { margin: 1px 4px 1px 0; }
+a.pill:hover { text-decoration: none; border-color: var(--line-2); }
+.anno { color: var(--text-2); font-style: italic; }
+.meter { min-width: 90px; margin: 6px 0 4px; }
+.tbl-note { margin-top: 10px; color: var(--muted); font-size: 13px; }
+.more { display: inline-block; margin-top: 10px; font-size: 13.5px; }
+.top .live .lt { overflow: hidden; text-overflow: ellipsis; }
+@media (max-width: 640px) {
+  .hide-s { display: none; }
+  .t th, .t td { padding: 9px 10px; }
+  .t td { min-width: 104px; }  /* readable columns; the table scrolls inside .tbl-wrap instead */
+  .hero { padding: 18px; gap: 14px; align-items: flex-start; }
+  .hero .h-ico { width: 44px; height: 44px; }
+  .hero h2 { font-size: 20px; }
+  .tile { min-height: 0; }
+  .cols-4.tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .tile-val { font-size: 26px; }
+  .kv { grid-template-columns: minmax(0, 1fr); gap: 0; }
+  .kv dd { margin-bottom: 8px; }
+}
+@media (max-width: 460px) { .top .live { display: none; } }

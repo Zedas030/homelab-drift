@@ -63,6 +63,8 @@ class Config:
     git_enabled: bool
     pause_while_active: list[str] = field(default_factory=list)
     secrets: dict[str, str] = field(default_factory=dict)
+    home_url: str = ""  # ui.home_url: optional link back to a house dashboard (empty = no button)
+    home_label: str = "Dashboard"
 
     @property
     def www_dir(self) -> Path:
@@ -167,6 +169,10 @@ def load(path: Path | str | None = None) -> Config:
     digest_time = str(_get(raw, "notify.digest_time", "19:00"))
     if not re.fullmatch(r"([01]\d|2[0-3]):[0-5]\d", digest_time):
         raise ConfigError("notify.digest_time must use the format HH:MM")
+    home_url = str(_get(raw, "ui.home_url", "")).strip()
+    if home_url and not re.match(r"(https?://|/)", home_url):
+        raise ConfigError("ui.home_url must start with http://, https:// or /")
+    home_label = str(_get(raw, "ui.home_label", "Dashboard")).strip() or "Dashboard"
     ignore_raw = _get(raw, "drift.ignore", {}) or {}
     ignore = {k: [str(x) for x in (v or [])] for k, v in ignore_raw.items()}
 
@@ -203,4 +209,6 @@ def load(path: Path | str | None = None) -> Config:
         git_enabled=bool(_get(raw, "general.git", True)),
         pause_while_active=[str(u) for u in (_get(raw, "general.pause_while_active", []) or [])],
         secrets=secrets,
+        home_url=home_url,
+        home_label=home_label,
     )

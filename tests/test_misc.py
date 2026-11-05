@@ -27,10 +27,17 @@ def test_example_config_loads(cfg):
     ({"hosts": [{"name": "a b", "address": "x"}]}, "invalid name"),
     ({"drift__confirm_after_scans": 0}, ">= 1"),
     ({"notify__digest_time": "25:00"}, "HH:MM"),
+    ({"ui__home_url": "javascript:alert(1)"}, "ui.home_url"),
 ])
 def test_config_validation(tmp_path, over, msg):
     with pytest.raises(config.ConfigError, match=msg):
         config.load(write_cfg(tmp_path, **over))
+
+
+def test_ui_home_link(tmp_path, cfg):
+    assert cfg.home_url == "" and cfg.home_label == "Dashboard"  # example config: no button
+    c = config.load(write_cfg(tmp_path, ui={"home_url": "http://dashboard.example.local/", "home_label": "House"}))
+    assert c.home_url == "http://dashboard.example.local/" and c.home_label == "House"
 
 
 def test_secrets_from_env_file_and_environment(tmp_path, monkeypatch):

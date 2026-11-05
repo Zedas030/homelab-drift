@@ -1,46 +1,75 @@
 {% extends "base.html" %}
-{% from "_macros.html" import findings_table %}
+{% from "_macros.html" import findings_table, sech, tcard, tile %}
 {% block body %}
-<h1>Homelab overview</h1>
-<p class="sub">Generated from the real system state. Last scan {{ meta.last_scan|ts }}{% if meta.last_success and meta.last_success != meta.last_scan %}, last scan without problems {{ meta.last_success|ts }}{% endif %}.</p>
+{% set n_open = findings_open|length %}
+{% set n_instant = findings_open|selectattr('severity','equalto','instant')|list|length %}
+{% set n_reach = hosts|selectattr('reachable')|list|length %}
+{% set n_unreach = hosts|selectattr('reachable', 'sameas', false)|list|length %}
+<div class="page-head"><div><div class="kicker">Overview</div><h1>Homelab overview</h1>
+<p>Generated from the real system state. Last scan {{ meta.last_scan|ts }}{% if meta.last_success and meta.last_success != meta.last_scan %}, last scan without problems {{ meta.last_success|ts }}{% endif %}.</p></div></div>
 
-{% for w in warnings %}<div class="alert warn">{{ w }}</div>{% endfor %}
-{% if outbox %}<div class="alert">{{ outbox }} notification(s) could not be delivered to Home Assistant yet; they are retried with the next scan.</div>{% endif %}
-
-<div class="cards">
-  <div class="card"><div class="k">Hosts</div><div class="v">{{ hosts|length }}</div><div class="muted">{{ hosts|selectattr('reachable')|list|length }} reachable</div></div>
-  <div class="card"><div class="k">Open findings</div><div class="v {{ 'bad' if findings_open else 'ok' }}">{{ findings_open|length }}</div><div class="muted">{{ findings_open|selectattr('severity','equalto','instant')|list|length }} instant</div></div>
-  <div class="card"><div class="k">Acknowledged</div><div class="v">{{ findings_acked|length }}</div><div class="muted">known, no alerts</div></div>
-  <div class="card"><div class="k">Pending</div><div class="v">{{ pending }}</div><div class="muted">not yet confirmed {{ cfg.confirm_after_scans }}×</div></div>
-</div>
-
-<h2>Open findings</h2>
-{% if findings_open %}
-<p class="muted">Acknowledge with <code>sudo homelab-drift ack &lt;ID&gt; --reason "…"</code> or with <code>known: true</code> in <code>annotations.yaml</code>.</p>
-{{ findings_table(findings_open) }}
-{% else %}<p class="ok">None. Everything matches the documentation.</p>{% endif %}
-
-<h2>Hosts</h2>
-<div class="box"><table>
-<tr><th>Host</th><th>Description</th><th>Status</th><th class="hide-s">System</th><th class="hide-s">Open ports</th><th class="hide-s">Undocumented</th></tr>
-{% for h in hosts %}
-<tr><td><a href="host-{{ h.name|slug }}.html"><b>{{ h.name }}</b></a><div class="muted mono">{{ h.address }}</div></td>
-<td>{{ h.description }}{% if h.note %}<div class="note">{{ h.note }}</div>{% endif %}</td>
-<td>{% if h.reachable %}<span class="chip ok">reachable</span>{% elif h.reachable is none %}<span class="chip">not scanned yet</span>{% else %}<span class="chip bad">unreachable</span><div class="muted">{{ h.error }}</div>{% endif %}</td>
-<td class="hide-s">{% if h.system.os %}{{ h.system.os }}<div class="muted">Kernel {{ h.system.kernel }} · boot {{ h.system.boot_time|ts }}</div>{% else %}–{% endif %}</td>
-<td class="hide-s">{{ h.n_public }}</td><td class="hide-s">{{ h.n_undoc }}</td></tr>
-{% endfor %}
-</table></div>
-
-{% if findings_acked %}
-<h2>Acknowledged findings</h2>
-{{ findings_table(findings_acked, show_ack=true) }}
+{% if n_open %}
+<div class="card hero {{ 'bad' if n_instant else 'warn' }}"><div class="h-ico">{{ icon('alert') }}</div><div>
+<h2>{{ n_open }} open finding{{ 's' if n_open != 1 }}, {{ n_instant }} instant</h2>
+<p>The system differs from the documentation. Acknowledge with <code>sudo homelab-drift ack &lt;ID&gt; --reason "…"</code> or with <code>known: true</code> in <code>annotations.yaml</code>.</p></div></div>
+{% elif n_unreach %}
+<div class="card hero warn"><div class="h-ico">{{ icon('alert') }}</div><div>
+<h2>No drift, but {{ n_unreach }} host{{ 's' if n_unreach != 1 }} unreachable</h2>
+<p>The docs show the last known state of the unreachable host{{ 's' if n_unreach != 1 }}.</p></div></div>
+{% else %}
+<div class="card hero ok"><div class="h-ico">{{ icon('check') }}</div><div>
+<h2>No drift – documentation matches the system</h2>
+<p>All {{ hosts|length }} host{{ 's' if hosts|length != 1 }} scanned, nothing open.</p></div></div>
 {% endif %}
 
-<h2>Recent changes</h2>
-<div class="box"><table>
-<tr><th>Time</th><th>Host</th><th>Change</th></tr>
-{% for e in changelog[:12] %}<tr><td class="mono">{{ e.ts|ts }}</td><td>{{ e.host }}</td><td>{{ e.summary }}{% if e.finding %} <a class="chip" href="#{{ e.finding }}">{{ e.finding }}</a>{% endif %}</td></tr>{% endfor %}
-</table></div>
-<p><a href="changelog.html">Full changelog →</a></p>
+{% for w in warnings %}<div class="note warn">{{ w }}</div>{% endfor %}
+{% if outbox %}<div class="note bad">{{ outbox }} notification(s) could not be delivered to Home Assistant yet; they are retried with the next scan.</div>{% endif %}
+
+<div class="grid cols-4 tiles">
+  {{ tile('Hosts', 'server', hosts|length, n_reach ~ ' reachable', '' if n_reach == hosts|length else 'warn') }}
+  {{ tile('Open findings', 'alert', n_open, n_instant ~ ' instant', 'bad' if n_open else 'ok') }}
+  {{ tile('Acknowledged', 'check', findings_acked|length, 'known, no alerts') }}
+  {{ tile('Pending', 'clock', pending, 'not yet confirmed ' ~ cfg.confirm_after_scans ~ '×') }}
+</div>
+
+<section class="sec">
+{{ sech('Open findings', n_open) }}
+{% if findings_open %}
+{{ findings_table(findings_open) }}
+{% else %}<div class="note ok">None. Everything matches the documentation.</div>{% endif %}
+</section>
+
+<section class="sec">
+{{ sech('Hosts', hosts|length) }}
+{% call tcard() %}
+<thead><tr><th>Host</th><th>Description</th><th>Status</th><th class="hide-s">System</th><th class="hide-s">Open ports</th><th class="hide-s">Undocumented</th></tr></thead>
+<tbody>
+{% for h in hosts %}
+<tr><td><a href="host-{{ h.name|slug }}.html"><b>{{ h.name }}</b></a><div class="sub-l mono">{{ h.address }}</div></td>
+<td>{{ h.description }}{% if h.note %}<div class="anno">{{ h.note }}</div>{% endif %}</td>
+<td>{% if h.reachable %}<span class="pill ok"><i class="d"></i>reachable</span>{% elif h.reachable is none %}<span class="pill"><i class="d"></i>not scanned yet</span>{% else %}<span class="pill bad"><i class="d"></i>unreachable</span><div class="sub-l">{{ h.error }}</div>{% endif %}</td>
+<td class="hide-s">{% if h.system.os %}{{ h.system.os }}<div class="sub-l">Kernel {{ h.system.kernel }} · boot {{ h.system.boot_time|ts }}</div>{% else %}–{% endif %}</td>
+<td class="hide-s">{{ h.n_public }}</td><td class="hide-s">{{ h.n_undoc }}</td></tr>
+{% endfor %}
+</tbody>
+{% endcall %}
+</section>
+
+{% if findings_acked %}
+<section class="sec">
+{{ sech('Acknowledged findings', findings_acked|length) }}
+{{ findings_table(findings_acked, show_ack=true) }}
+</section>
+{% endif %}
+
+<section class="sec">
+{{ sech('Recent changes') }}
+{% call tcard() %}
+<thead><tr><th class="w-time">Time</th><th>Host</th><th>Change</th></tr></thead>
+<tbody>
+{% for e in changelog[:12] %}<tr><td class="mono nowrap">{{ e.ts|ts }}</td><td>{{ e.host }}</td><td>{{ e.summary }}{% if e.finding %} <a class="pill" href="#{{ e.finding }}">{{ e.finding }}</a>{% endif %}</td></tr>{% endfor %}
+</tbody>
+{% endcall %}
+<a class="more" href="changelog.html">Full changelog →</a>
+</section>
 {% endblock %}

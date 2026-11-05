@@ -1,20 +1,32 @@
-{% macro sev(f) %}{% if f.severity == 'instant' %}<span class="chip bad">instant</span>{% else %}<span class="chip warn">digest</span>{% endif %}{% endmacro %}
+{% macro sev(f) %}{% if f.severity == 'instant' %}<span class="pill bad"><i class="d"></i>instant</span>{% else %}<span class="pill warn"><i class="d"></i>digest</span>{% endif %}{% endmacro %}
 
-{% macro status(f) %}{% if f.status == 'open' %}<span class="chip bad">open</span>{% elif f.status == 'acknowledged' %}<span class="chip ok" title="{{ f.ack.reason if f.ack }}">acknowledged</span>{% else %}<span class="chip">{{ f.status }}</span>{% endif %}{% endmacro %}
+{% macro status(f) %}{% if f.status == 'open' %}<span class="pill bad"><i class="d"></i>open</span>{% elif f.status == 'acknowledged' %}<span class="pill ok" title="{{ f.ack.reason if f.ack }}"><i class="d"></i>acknowledged</span>{% else %}<span class="pill"><i class="d"></i>{{ f.status }}</span>{% endif %}{% endmacro %}
 
-{% macro doc(i) %}{% if i._note %}<span class="note">{{ i._note }}</span>{% if i._known %} <span class="chip ok">known</span>{% endif %}{% elif i._known %}<span class="chip ok">known</span>{% else %}<span class="chip warn" title="No entry in annotations.yaml">undocumented</span>{% endif %}{% for f in i._findings %} <a class="chip {{ 'bad' if f.status=='open' else 'ok' }}" href="index.html#{{ f.id }}">{{ f.id }}</a>{% endfor %}{% endmacro %}
+{% macro doc(i) %}{% if i._note %}<span class="anno">{{ i._note }}</span>{% if i._known %} <span class="pill ok">known</span>{% endif %}{% elif i._known %}<span class="pill ok">known</span>{% else %}<span class="pill warn" title="No entry in annotations.yaml">undocumented</span>{% endif %}{% for f in i._findings %} <a class="pill {{ 'bad' if f.status=='open' else 'ok' }}" href="index.html#{{ f.id }}">{{ f.id }}</a>{% endfor %}{% endmacro %}
 
-{% macro exposure(e) %}{% if e == 'all' %}<span class="chip warn">all interfaces</span>{% elif e == 'LAN' %}<span class="chip warn">LAN</span>{% elif e == 'Tailscale' %}<span class="chip">Tailscale</span>{% else %}<span class="chip ok">{{ e }}</span>{% endif %}{% endmacro %}
+{% macro exposure(e) %}{% if e == 'all' %}<span class="pill warn">all interfaces</span>{% elif e == 'LAN' %}<span class="pill warn">LAN</span>{% elif e == 'Tailscale' %}<span class="pill accent">Tailscale</span>{% else %}<span class="pill ok">{{ e }}</span>{% endif %}{% endmacro %}
+
+{# Section heading: title, optional item count, optional explanatory sentence #}
+{% macro sech(title, count=none, sub='', id='') %}<div class="sec-h"{% if id %} id="{{ id }}"{% endif %}><h2>{{ title }}{% if count is not none %} <span class="count">({{ count }})</span>{% endif %}</h2>{% if sub %}<p>{{ sub }}</p>{% endif %}</div>{% endmacro %}
+
+{# A card holding one table; the caller provides <thead>/<tbody> #}
+{% macro tcard() %}<div class="card"><div class="card-b flush"><div class="tbl-wrap"><table class="t">
+{{ caller() }}
+</table></div></div></div>{% endmacro %}
+
+{% macro tile(label, ico, value, sub='', tone='') %}<div class="card tile"><div class="tile-top">{{ icon(ico) }}{{ label }}</div><div class="tile-val{{ ' ' ~ tone if tone }}">{{ value }}</div>{% if sub %}<div class="tile-sub">{{ sub }}</div>{% endif %}</div>{% endmacro %}
 
 {% macro findings_table(rows, show_ack=false) %}
-<div class="box"><table>
-<tr><th>ID</th><th>Host</th><th>Finding</th><th class="hide-s">for</th><th>Severity</th><th>Status</th>{% if show_ack %}<th class="hide-s">Acknowledgement</th>{% endif %}</tr>
+{% call tcard() %}
+<thead><tr><th>ID</th><th>Host</th><th>Finding</th><th class="hide-s">for</th><th>Severity</th><th>Status</th>{% if show_ack %}<th class="hide-s">Acknowledgement</th>{% endif %}</tr></thead>
+<tbody>
 {% for f in rows %}
-<tr id="{{ f.id }}"><td class="mono">{{ f.id }}</td><td>{{ f.host }}</td>
-<td>{{ f.title }}{% if f.details %}<div class="muted mono" style="margin-top:2px">{{ f.details }}</div>{% endif %}</td>
-<td class="hide-s">{{ f.first_seen|since }}</td><td>{{ sev(f) }}</td><td>{{ status(f) }}</td>
+<tr id="{{ f.id }}"><td class="mono nowrap">{{ f.id }}</td><td>{{ f.host }}</td>
+<td><b>{{ f.title }}</b>{% if f.details %}<div class="sub-l mono">{{ f.details }}</div>{% endif %}</td>
+<td class="hide-s nowrap">{{ f.first_seen|since }}</td><td>{{ sev(f) }}</td><td>{{ status(f) }}</td>
 {% if show_ack %}<td class="hide-s">{% if f.ack %}{{ f.ack.at|ts }} via {{ f.ack.via }}{% if f.ack.reason %} - {{ f.ack.reason }}{% endif %}{% if f.ack.until %} (until {{ f.ack.until }}){% endif %}{% endif %}</td>{% endif %}
 </tr>
 {% endfor %}
-</table></div>
+</tbody>
+{% endcall %}
 {% endmacro %}

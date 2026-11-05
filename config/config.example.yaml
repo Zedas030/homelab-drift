@@ -22,6 +22,14 @@ general:
   pause_while_active: []
   # pause_while_active: ["raspiBackup.service"]
 
+# Web docs (optional). The pages use the shared homelab theme with a light/dark toggle (remembered per browser).
+ui:
+  # Adds a button to the top bar that links back to your house dashboard. Empty = no button.
+  home_url: ""
+  # home_url: "http://dashboard.example.local/"
+  # Text on that button (hidden on narrow phone screens, the icon stays)
+  home_label: "Dashboard"
+
 ssh:
   # User on the monitored hosts. Its forced command only allows the read-only gate.
   user: drift

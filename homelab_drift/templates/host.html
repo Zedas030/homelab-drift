@@ -1,68 +1,81 @@
 {% extends "base.html" %}
-{% from "_macros.html" import doc, exposure %}
-{% block title %}{{ host.name }} – {{ cfg.title }}{% endblock %}
+{% from "_macros.html" import doc, exposure, sech, tile %}
+{% block title %}{{ host.name }} · {{ cfg.title }}{% endblock %}
 {% block body %}
-<h1>{{ host.name }}</h1>
-<p class="sub">{{ host.description }}{% if host.note %} · <span class="note">{{ host.note }}</span>{% endif %}</p>
-{% if host.reachable is sameas false %}<div class="alert">Unreachable during the last scan: {{ host.error }}. Showing the last known state ({{ host.last_ok|ts }}).</div>{% endif %}
+<div class="page-head"><div><div class="kicker">Host{% if host.type == 'fritzbox' %} · FRITZ!Box{% endif %}</div><h1>{{ host.name }}</h1>
+<p>{{ host.description }}{% if host.note %} · <span class="anno">{{ host.note }}</span>{% endif %}</p></div></div>
+{% if host.reachable is sameas false %}<div class="note bad">Unreachable during the last scan: {{ host.error }}. Showing the last known state ({{ host.last_ok|ts }}).</div>{% endif %}
+
+{% set n_items = host.cols.values()|map(attribute='items')|map('length')|sum %}
+<div class="grid cols-4 tiles">
+  {% if host.reachable %}{{ tile('Status', 'server', 'reachable', 'scanned ' ~ host.scanned_at|ts, 'ok') }}{% elif host.reachable is none %}{{ tile('Status', 'server', 'not scanned', 'waiting for the first scan') }}{% else %}{{ tile('Status', 'server', 'unreachable', 'last OK ' ~ host.last_ok|ts, 'bad') }}{% endif %}
+  {{ tile('Network-exposed ports', 'ports', host.n_public, '"all interfaces" or "LAN"', 'warn' if host.n_public else '') }}
+  {{ tile('Undocumented', 'alert', host.n_undoc, 'items without a note', 'warn' if host.n_undoc else 'ok') }}
+  {{ tile('Inventory', 'overview', n_items, 'items from ' ~ host.cols|length ~ ' collectors') }}
+</div>
 
 {% set sys = host.system %}
 {% if sys.hostname %}
-<div class="box"><dl class="kv">
+<section class="sec">
+{{ sech('System') }}
+<div class="card"><div class="card-b"><dl class="kv">
 <dt>Hostname</dt><dd>{{ sys.hostname }} <span class="muted mono">({{ host.address }})</span></dd>
 <dt>Operating system</dt><dd>{{ sys.os }} · {{ sys.arch }}</dd>
 <dt>Kernel</dt><dd>{{ sys.kernel }}</dd>
 <dt>Hardware</dt><dd>{{ sys.cpus }} CPUs · {{ sys.mem_gb }} GB RAM</dd>
 <dt>Last boot</dt><dd>{{ sys.boot_time|ts }} (up for {{ sys.boot_time|since }})</dd>
 <dt>Scanned</dt><dd>{{ host.scanned_at|ts }}</dd>
-</dl></div>
+</dl></div></div>
+</section>
 {% endif %}
 
 {% for cname, c in host.cols.items() if cname != 'system' %}
-<h2 id="{{ cname }}">{{ titles[cname] }} <span class="muted" style="font-weight:400">({{ c['items']|length }})</span></h2>
-{% if c.status == 'error' %}<div class="alert">Collector failed: {{ c.error }}. Showing the last known state.</div>
-{% elif c.status == 'unavailable' %}<p class="muted">Not present on this host.</p>{% endif %}
+<section class="sec">
+{{ sech(titles[cname], c['items']|length, id=cname) }}
+{% if c.status == 'error' %}<div class="note bad">Collector failed: {{ c.error }}. Showing the last known state.</div>
+{% elif c.status == 'unavailable' %}<div class="note">Not present on this host.</div>{% endif %}
 {% if c['items'] %}
-<div class="box"><table>
+<div class="card"><div class="card-b flush"><div class="tbl-wrap"><table class="t">
 {% if cname == 'docker' %}
-<tr><th>Container</th><th>Image / version</th><th>Status</th><th class="hide-s">Ports</th><th class="hide-s">Network</th><th class="hide-s">Restart</th><th>Note</th></tr>
-{% for i in c['items'] %}<tr><td><a href="service-{{ (host.name ~ '-docker-' ~ i.id)|slug }}.html">{{ i.id }}</a>{% if i.compose_project %}<div class="muted">Compose: {{ i.compose_project }}</div>{% endif %}</td>
-<td class="mono">{{ i.image }}<div class="muted">{{ i.version or i.image_id }}</div></td>
-<td>{% if i.running %}<span class="chip ok">{{ i.state }}</span>{% else %}<span class="chip">{{ i.state }}</span>{% endif %}{% if i.health %} <span class="chip {{ 'ok' if i.health=='healthy' else 'warn' }}">{{ i.health }}</span>{% endif %}{% if i.privileged %} <span class="chip bad">privileged</span>{% endif %}</td>
+<thead><tr><th>Container</th><th>Image / version</th><th>Status</th><th class="hide-s">Ports</th><th class="hide-s">Network</th><th class="hide-s">Restart</th><th>Note</th></tr></thead><tbody>
+{% for i in c['items'] %}<tr><td><a href="service-{{ (host.name ~ '-docker-' ~ i.id)|slug }}.html">{{ i.id }}</a>{% if i.compose_project %}<div class="sub-l">Compose: {{ i.compose_project }}</div>{% endif %}</td>
+<td class="mono">{{ i.image }}<div class="sub-l">{{ i.version or i.image_id }}</div></td>
+<td>{% if i.running %}<span class="pill ok">{{ i.state }}</span>{% else %}<span class="pill">{{ i.state }}</span>{% endif %}{% if i.health %} <span class="pill {{ 'ok' if i.health=='healthy' else 'warn' }}">{{ i.health }}</span>{% endif %}{% if i.privileged %} <span class="pill bad">privileged</span>{% endif %}</td>
 <td class="hide-s mono">{{ i.ports|joinl('<br>')|safe if i.ports else '–' }}</td><td class="hide-s">{{ i.networks|joinl }}</td><td class="hide-s">{{ i.restart_policy }}</td><td>{{ doc(i) }}</td></tr>{% endfor %}
 {% elif cname == 'ports' %}
-<tr><th>Port</th><th>Exposure</th><th>Service / process</th><th class="hide-s">Addresses</th><th>Note</th></tr>
-{% for i in c['items'] %}<tr><td class="mono">{% if i.ephemeral %}{{ i.proto }} ephemeral<div class="muted">{{ i.eph_ports|joinl }}</div>{% else %}{{ i.port }}/{{ i.proto }}{% endif %}</td>
-<td>{{ exposure(i.exposure) }}</td><td>{% if i._service_link %}<a href="{{ i._service_link }}">{{ i._service }}</a>{% else %}{{ i._service }}{% endif %}{% if i._service != i.processes|joinl %}<div class="muted">{{ i.processes|joinl }}</div>{% endif %}</td>
+<thead><tr><th>Port</th><th>Exposure</th><th>Service / process</th><th class="hide-s">Addresses</th><th>Note</th></tr></thead><tbody>
+{% for i in c['items'] %}<tr><td class="mono">{% if i.ephemeral %}{{ i.proto }} ephemeral<div class="sub-l">{{ i.eph_ports|joinl }}</div>{% else %}{{ i.port }}/{{ i.proto }}{% endif %}</td>
+<td>{{ exposure(i.exposure) }}</td><td>{% if i._service_link %}<a href="{{ i._service_link }}">{{ i._service }}</a>{% else %}{{ i._service }}{% endif %}{% if i._service != i.processes|joinl %}<div class="sub-l">{{ i.processes|joinl }}</div>{% endif %}</td>
 <td class="hide-s mono">{{ i.addresses|joinl }}</td><td>{{ doc(i) }}</td></tr>{% endfor %}
 {% elif cname == 'nginx' %}
-<tr><th>Site</th><th>listen</th><th class="hide-s">root / proxies</th><th>Note</th></tr>
-{% for i in c['items'] %}<tr><td><a href="service-{{ (host.name ~ '-nginx-' ~ i.id)|slug }}.html">{{ i.id }}</a><div class="muted mono">{{ i.file }}</div></td>
+<thead><tr><th>Site</th><th>listen</th><th class="hide-s">root / proxies</th><th>Note</th></tr></thead><tbody>
+{% for i in c['items'] %}<tr><td><a href="service-{{ (host.name ~ '-nginx-' ~ i.id)|slug }}.html">{{ i.id }}</a><div class="sub-l mono">{{ i.file }}</div></td>
 <td class="mono">{{ (i.listen or i.servers)|joinl('<br>')|safe }}</td>
 <td class="hide-s mono">{% if i.root %}root {{ i.root }}<br>{% endif %}{{ i.proxies|joinl('<br>')|safe }}</td><td>{{ doc(i) }}</td></tr>{% endfor %}
 {% elif cname == 'cron' %}
-<tr><th>Schedule</th><th>User</th><th>Command</th><th class="hide-s">Source</th><th>Note</th></tr>
-{% for i in c['items'] %}<tr><td class="mono">{{ i.schedule }}</td><td>{% if i.user == 'root' %}<span class="chip warn">root</span>{% else %}{{ i.user }}{% endif %}</td>
+<thead><tr><th>Schedule</th><th>User</th><th>Command</th><th class="hide-s">Source</th><th>Note</th></tr></thead><tbody>
+{% for i in c['items'] %}<tr><td class="mono">{{ i.schedule }}</td><td>{% if i.user == 'root' %}<span class="pill warn">root</span>{% else %}{{ i.user }}{% endif %}</td>
 <td><code>{{ i.command }}</code></td><td class="hide-s mono">{{ i.source }}</td><td>{{ doc(i) }}</td></tr>{% endfor %}
 {% elif cname == 'systemd' %}
-<tr><th>Unit</th><th>Status</th><th class="hide-s">User</th><th class="hide-s">Schedule / command</th><th>Note</th></tr>
-{% for i in c['items'] %}<tr><td><a href="service-{{ (host.name ~ '-systemd-' ~ i.id)|slug }}.html">{{ i.id }}</a><div class="muted">{{ i.description }}</div></td>
-<td>{% if i.state == 'failed' %}<span class="chip bad">failed</span>{% elif i.state == 'active' %}<span class="chip ok">{{ i.sub_state or 'active' }}</span>{% else %}<span class="chip">inactive</span>{% endif %}<div class="muted">{{ i.unit_file_state }}</div></td>
+<thead><tr><th>Unit</th><th>Status</th><th class="hide-s">User</th><th class="hide-s">Schedule / command</th><th>Note</th></tr></thead><tbody>
+{% for i in c['items'] %}<tr><td><a href="service-{{ (host.name ~ '-systemd-' ~ i.id)|slug }}.html">{{ i.id }}</a><div class="sub-l">{{ i.description }}</div></td>
+<td>{% if i.state == 'failed' %}<span class="pill bad">failed</span>{% elif i.state == 'active' %}<span class="pill ok">{{ i.sub_state or 'active' }}</span>{% else %}<span class="pill">inactive</span>{% endif %}<div class="sub-l">{{ i.unit_file_state }}</div></td>
 <td class="hide-s">{{ i.user }}</td><td class="hide-s mono">{% if i.kind == 'timer' %}{{ i.schedule }} → {{ i.unit }}{% else %}{{ i.exec[:140] }}{% endif %}</td><td>{{ doc(i) }}</td></tr>{% endfor %}
 {% elif cname == 'storage' %}
-<tr><th>Mount</th><th>Source</th><th>Usage</th><th class="hide-s">Size</th><th>Note</th></tr>
-{% for i in c['items'] %}<tr><td class="mono">{{ i.id }}<div class="muted">{{ i.fstype }}</div></td><td class="mono">{{ i.source }}</td>
-<td><div class="bar {{ 'bad' if i.level=='critical' else 'warn' if i.level=='full' }}"><i style="width:{{ i.use_percent }}%"></i></div>{{ i.use_percent }} % · free {{ i.avail|bytes }}</td>
+<thead><tr><th>Mount</th><th>Source</th><th>Usage</th><th class="hide-s">Size</th><th>Note</th></tr></thead><tbody>
+{% for i in c['items'] %}<tr><td class="mono">{{ i.id }}<div class="sub-l">{{ i.fstype }}</div></td><td class="mono">{{ i.source }}</td>
+<td><div class="meter {{ 'bad' if i.level=='critical' else 'warn' if i.level=='full' else 'ok' }}"><i style="width:{{ i.use_percent }}%"></i></div>{{ i.use_percent }} % · free {{ i.avail|bytes }}</td>
 <td class="hide-s">{{ i.size|bytes }}</td><td>{{ doc(i) }}</td></tr>{% endfor %}
 {% elif cname == 'tailscale' %}
-<tr><th>Device</th><th>IPs</th><th>OS</th><th>Status</th><th>Note</th></tr>
-{% for i in c['items'] %}<tr><td>{{ 'this host (' ~ i.hostname ~ ')' if i.id == 'self' else i.id }}<div class="muted mono">{{ i.dns_name }}</div></td><td class="mono">{{ i.ips|joinl('<br>')|safe }}</td><td>{{ i.os }}</td>
-<td>{% if i.id == 'self' %}<span class="chip {{ 'ok' if i.backend_state=='Running' else 'bad' }}">{{ i.backend_state }}</span> {{ i.version }}{% elif i.online %}<span class="chip ok">online</span>{% else %}<span class="chip">offline</span> <span class="muted">{{ i.last_seen }}</span>{% endif %}</td><td>{{ doc(i) }}</td></tr>{% endfor %}
+<thead><tr><th>Device</th><th>IPs</th><th>OS</th><th>Status</th><th>Note</th></tr></thead><tbody>
+{% for i in c['items'] %}<tr><td>{{ 'this host (' ~ i.hostname ~ ')' if i.id == 'self' else i.id }}<div class="sub-l mono">{{ i.dns_name }}</div></td><td class="mono">{{ i.ips|joinl('<br>')|safe }}</td><td>{{ i.os }}</td>
+<td>{% if i.id == 'self' %}<span class="pill {{ 'ok' if i.backend_state=='Running' else 'bad' }}">{{ i.backend_state }}</span> {{ i.version }}{% elif i.online %}<span class="pill ok">online</span>{% else %}<span class="pill">offline</span> <span class="muted">{{ i.last_seen }}</span>{% endif %}</td><td>{{ doc(i) }}</td></tr>{% endfor %}
 {% elif cname == 'fritzbox' %}
-<tr><th>Device</th><th>IP</th><th>MAC</th><th>Connection</th><th>Note</th></tr>
-{% for i in c['items'] %}<tr><td>{{ i.name }}</td><td class="mono">{{ i.ip }}</td><td class="mono">{{ i.id }}</td><td>{% if i.active %}<span class="chip ok">active</span>{% else %}<span class="chip">inactive</span>{% endif %} {{ i.interface }}</td><td>{{ doc(i) }}</td></tr>{% endfor %}
+<thead><tr><th>Device</th><th>IP</th><th>MAC</th><th>Connection</th><th>Note</th></tr></thead><tbody>
+{% for i in c['items'] %}<tr><td>{{ i.name }}</td><td class="mono">{{ i.ip }}</td><td class="mono">{{ i.id }}</td><td>{% if i.active %}<span class="pill ok">active</span>{% else %}<span class="pill">inactive</span>{% endif %} {{ i.interface }}</td><td>{{ doc(i) }}</td></tr>{% endfor %}
 {% endif %}
-</table></div>
+</tbody></table></div></div></div>
 {% endif %}
+</section>
 {% endfor %}
 {% endblock %}

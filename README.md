@@ -243,6 +243,23 @@ mounts, cron jobs, tailnet peers), notify service, digest time, Home Assistant U
 Scan interval and digest time are part of the systemd timers - apply changes with
 `sudo /opt/homelab-drift/app/scripts/install.sh --schedule`.
 
+**Web docs look (optional, `ui:`).** The generated pages use a shared homelab theme (`assets/homelab-theme.css` plus
+`assets/drift.css`, written next to the pages) with a light/dark toggle that each browser remembers. Two optional settings
+add a button to the top bar that links back to your house dashboard:
+
+| Setting | Default | Meaning |
+|---|---|---|
+| `ui.home_url` | empty | URL of your dashboard (`http://`, `https://` or a path starting with `/`). Empty = no button. |
+| `ui.home_label` | `Dashboard` | text on the button (on narrow phone screens only the icon is shown) |
+
+```yaml
+ui:
+  home_url: "http://dashboard.example.local/"
+  home_label: "Dashboard"
+```
+
+Changes show up with the next scan, or right away with `sudo homelab-drift render`.
+
 | Path | Content |
 |---|---|
 | `/etc/homelab-drift/config.yaml` | configuration |

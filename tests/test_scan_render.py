@@ -37,6 +37,15 @@ def test_full_cycle(cfg, outputs, tmp_path):
     assert "Wiki" in ports_html and "undocumented" in ports_html
     assert ">Container uptime-kuma<" in ports_html  # port -> service via docker-proxy, the running container wins
     assert ">Container uptime-kuma-old-v1<" not in ports_html
+    # shared homelab theme: every page links the CSS written next to it, no home button unless configured
+    assert (www / "assets" / "homelab-theme.css").read_text(encoding="utf-8").startswith("/* homelab-theme.css")
+    assert (www / "assets" / "drift.css").exists()
+    for page in ("index.html", "ports.html", "changelog.html", "host-pi.html"):
+        html = (www / page).read_text(encoding="utf-8")
+        assert 'href="assets/homelab-theme.css' in html and '<header class="top">' in html and "hl-theme" in html
+        assert "home-btn" not in html
+    index = (www / "index.html").read_text(encoding="utf-8")
+    assert 'class="card hero ok"' in index and "No drift – documentation matches the system" in index
     assert ha.sensor[0] == "ok" and ha.sensor[1]["open_findings"] == 0
     repo = cfg.repo_dir
     assert (repo / "snapshots" / "pi" / "ports.json").exists() and (repo / "docs" / "pi.md").exists()
@@ -54,7 +63,8 @@ def test_full_cycle(cfg, outputs, tmp_path):
     assert [f["id"] for f in s.confirmed] == ["D-0001"]
     assert len(ha.sent) == 1 and "Port 18999/tcp is new" in ha.sent[0][1]
     assert ha.sensor[0] == "drift" and ha.sensor[1]["open_instant"] == 1
-    assert 'id="D-0001"' in (www / "index.html").read_text(encoding="utf-8")
+    index = (www / "index.html").read_text(encoding="utf-8")
+    assert 'id="D-0001"' in index and "1 open finding, 1 instant" in index and 'class="card hero bad"' in index
     log3 = git_log(repo, "--format=%s")
     assert "1 change(s): pi: Port 18999/tcp is new" in log3 and "Observation:" in log3
 
@@ -217,3 +227,18 @@ def test_maintenance_window_skips_scan_without_alerts(tmp_path, outputs):
     assert not st.findings and not st.outbox and st.meta["last_pause"]["unit"] == "backup.service"
     s = scan.run_scan(cfg, run=fake_runner(outputs), ha=ha, maintenance=lambda c: None)
     assert not s.paused and not s.health_problems and not ha.sent
+
+
+@needs_git
+def test_home_button_and_unreachable_hero(tmp_path, outputs):
+    cfg = config.load(write_cfg(tmp_path, ui={"home_url": "http://dashboard.example.local/", "home_label": "House <dash>"}))
+    ha = FakeHA()
+    run(cfg, outputs, ha)
+    for page in ("index.html", "host-pi.html", "ports.html", "changelog.html"):
+        html = (cfg.www_dir / page).read_text(encoding="utf-8")
+        assert 'class="btn cross home-btn" href="http://dashboard.example.local/"' in html
+        assert '<span class="lbl">House &lt;dash&gt;</span>' in html  # escaped
+    down = {"pi": {v: Unreachable("ssh: connect to host 127.0.0.1 port 22: Connection refused") for v in outputs["pi"]}}
+    run(cfg, down, ha, 2)
+    index = (cfg.www_dir / "index.html").read_text(encoding="utf-8")
+    assert "unreachable" in index and 'class="card hero' in index

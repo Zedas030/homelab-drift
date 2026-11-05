@@ -1,30 +1,42 @@
 {% extends "base.html" %}
-{% from "_macros.html" import doc, exposure %}
+{% from "_macros.html" import doc, exposure, sech, tcard %}
 {% set i = s.item %}
-{% block title %}{{ i.id }} – {{ s.host }}{% endblock %}
+{% block title %}{{ i.id }} · {{ s.host }} · {{ cfg.title }}{% endblock %}
 {% block body %}
-<p class="muted"><a href="host-{{ s.host|slug }}.html">{{ s.host }}</a> › {{ titles[s.collector] }}</p>
-<h1>{{ i.id }}</h1>
-<p class="sub">{{ doc(i) }}</p>
-<div class="box"><dl class="kv">
+<div class="page-head"><div>
+<div class="crumb"><a href="host-{{ s.host|slug }}.html">{{ s.host }}</a> › <a href="host-{{ s.host|slug }}.html#{{ s.collector }}">{{ titles[s.collector] }}</a></div>
+<div class="kicker">{{ s.collector }}</div><h1>{{ i.id }}</h1>
+<p>{{ doc(i) }}</p></div></div>
+
+<div class="card"><div class="card-b"><dl class="kv">
 {% for k, v in i.items() if not k.startswith('_') and k != 'id' %}
 <dt>{{ k }}</dt><dd class="mono">{% if v is iterable and v is not string %}{{ v|joinl('<br>')|safe if v else '–' }}{% else %}{{ v if v not in (none, '') else '–' }}{% endif %}</dd>
 {% endfor %}
-</dl></div>
+</dl></div></div>
 
 {% set related = ports|selectattr('host','equalto',s.host)|selectattr('_service_link','equalto',s.file)|list %}
 {% if related %}
-<h2>Ports</h2>
-<div class="box"><table><tr><th>Port</th><th>Exposure</th><th>Note</th></tr>
-{% for p in related %}<tr><td class="mono">{{ p.port }}/{{ p.proto }}</td><td>{{ exposure(p.exposure) }}</td><td>{{ doc(p) }}</td></tr>{% endfor %}
-</table></div>
+<section class="sec">
+{{ sech('Ports', related|length) }}
+{% call tcard() %}
+<thead><tr><th>Port</th><th>Exposure</th><th>Note</th></tr></thead>
+<tbody>
+{% for p in related %}<tr><td class="mono nowrap">{{ p.port }}/{{ p.proto }}</td><td>{{ exposure(p.exposure) }}</td><td>{{ doc(p) }}</td></tr>{% endfor %}
+</tbody>
+{% endcall %}
+</section>
 {% endif %}
 
-<h2>History</h2>
+<section class="sec">
+{{ sech('History') }}
 {% if history %}
-<div class="box"><table><tr><th>Time</th><th>Change</th></tr>
-{% for e in history %}<tr><td class="mono">{{ e.ts|ts }}</td><td>{{ e.summary }}{% if e.details %}<div class="muted mono">{{ e.details }}</div>{% endif %}</td></tr>{% endfor %}
-</table></div>
-{% else %}<p class="muted">No changes since the initial inventory.</p>{% endif %}
-<p class="muted">Edit the note: <code>{{ cfg.annotations_file }}</code> → <code>{{ s.host }}: {{ s.collector }}: "{{ i.id }}": "…"</code></p>
+{% call tcard() %}
+<thead><tr><th>Time</th><th>Change</th></tr></thead>
+<tbody>
+{% for e in history %}<tr><td class="mono nowrap">{{ e.ts|ts }}</td><td>{{ e.summary }}{% if e.details %}<div class="sub-l mono">{{ e.details }}</div>{% endif %}</td></tr>{% endfor %}
+</tbody>
+{% endcall %}
+{% else %}<div class="note">No changes since the initial inventory.</div>{% endif %}
+<p class="tbl-note">Edit the note: <code>{{ cfg.annotations_file }}</code> → <code>{{ s.host }}: {{ s.collector }}: "{{ i.id }}": "…"</code></p>
+</section>
 {% endblock %}

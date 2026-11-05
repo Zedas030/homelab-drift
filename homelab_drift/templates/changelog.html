@@ -1,26 +1,33 @@
 {% extends "base.html" %}
-{% block title %}Changelog – {{ cfg.title }}{% endblock %}
+{% from "_macros.html" import sech, tcard %}
+{% block title %}Changelog · {{ cfg.title }}{% endblock %}
 {% block body %}
-<h1>Changelog</h1>
-<p class="sub">Automatic: every confirmed change (after {{ cfg.confirm_after_scans }} scans), newest first. Short restarts and flapping states do not show up here.</p>
+<div class="page-head"><div><div class="kicker">History</div><h1>Changelog</h1>
+<p>Automatic: every confirmed change (after {{ cfg.confirm_after_scans }} scans), newest first. Short restarts and flapping states do not show up here.</p></div></div>
 {% set ns = namespace(day='') %}
 {% for e in changelog %}
 {% set d = e.ts[:10] %}
-{% if d != ns.day %}{% if ns.day %}</table></div>{% endif %}{% set ns.day = d %}
-<h2>{{ d|day }}</h2>
-<div class="box"><table><tr><th style="width:70px">Time</th><th style="width:110px">Host</th><th>Change</th><th class="hide-s">Status</th></tr>
+{% if d != ns.day %}{% if ns.day %}</tbody></table></div></div></div></section>{% endif %}{% set ns.day = d %}
+<section class="sec">
+{{ sech(d|day) }}
+<div class="card"><div class="card-b flush"><div class="tbl-wrap"><table class="t"><thead><tr><th class="w-time">Time</th><th class="w-host">Host</th><th>Change</th><th class="hide-s">Status</th></tr></thead><tbody>
 {% endif %}
 <tr><td class="mono">{{ e.ts[11:16] }}</td><td>{{ e.host }}</td>
-<td>{{ e.summary }}{% if e.details %}<div class="muted mono">{{ e.details }}</div>{% endif %}</td>
-<td class="hide-s">{% if e.finding %}<a class="chip" href="index.html#{{ e.finding }}">{{ e.finding }}</a>{% endif %}{% if e.status == 'acknowledged' %} <span class="chip ok">acknowledged</span>{% endif %}</td></tr>
+<td>{{ e.summary }}{% if e.details %}<div class="sub-l mono">{{ e.details }}</div>{% endif %}</td>
+<td class="hide-s">{% if e.finding %}<a class="pill" href="index.html#{{ e.finding }}">{{ e.finding }}</a>{% endif %}{% if e.status == 'acknowledged' %} <span class="pill ok"><i class="d"></i>acknowledged</span>{% endif %}</td></tr>
 {% endfor %}
-{% if ns.day %}</table></div>{% else %}<p class="muted">No entries yet.</p>{% endif %}
+{% if ns.day %}</tbody></table></div></div></div></section>{% else %}<div class="note">No entries yet.</div>{% endif %}
 
 {% if git_log %}
-<h2>Snapshot versions (git)</h2>
-<div class="box"><table><tr><th>Commit</th><th>Time</th><th>Content</th></tr>
-{% for c in git_log %}<tr><td class="mono">{{ c.hash }}</td><td class="mono">{{ c.date|ts }}</td><td>{{ c.subject }}</td></tr>{% endfor %}
-</table></div>
-<p class="muted">Details: <code>git -C {{ cfg.repo_dir }} show &lt;commit&gt;</code></p>
+<section class="sec">
+{{ sech('Snapshot versions (git)', git_log|length) }}
+{% call tcard() %}
+<thead><tr><th>Commit</th><th>Time</th><th>Content</th></tr></thead>
+<tbody>
+{% for c in git_log %}<tr><td class="mono">{{ c.hash }}</td><td class="mono nowrap">{{ c.date|ts }}</td><td>{{ c.subject }}</td></tr>{% endfor %}
+</tbody>
+{% endcall %}
+<p class="tbl-note">Details: <code>git -C {{ cfg.repo_dir }} show &lt;commit&gt;</code></p>
+</section>
 {% endif %}
 {% endblock %}
