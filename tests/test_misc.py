@@ -190,3 +190,12 @@ def test_metrics_format(cfg):
     assert 'homelab_drift_collector_items{host="pi",collector="ports"} 41' in text
     assert "tailscale" not in text  # tools that are not installed are not an outage
     assert 'homelab_drift_findings{severity="instant",status="open"} 1' in text
+
+
+def test_unquoted_until_date_survives_json_cache():
+    # YAML reads an unquoted 2026-12-31 as a date; the notes cache (JSON) must not crash on it
+    from homelab_drift.util import dumps, short_hash
+    data = yaml.safe_load('pi:\n  docker:\n    old:\n      known: true\n      until: 2026-12-31\n')
+    assert isinstance(data["pi"]["docker"]["old"]["until"], dt.date)
+    assert '"until": "2026-12-31"' in dumps(data)
+    assert short_hash(data)

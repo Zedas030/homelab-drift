@@ -49,13 +49,20 @@ def human_duration(seconds: float) -> str:
 def short_hash(*parts: Any, n: int = 8) -> str:
     h = hashlib.sha1()
     for p in parts:
-        h.update(json.dumps(p, sort_keys=True, ensure_ascii=False).encode())
+        h.update(json.dumps(p, sort_keys=True, ensure_ascii=False, default=str).encode())
         h.update(b"\0")
     return h.hexdigest()[:n]
 
 
+def _json_default(o: Any) -> Any:
+    """YAML turns an unquoted 2026-12-31 into a date; keep such values as ISO strings in JSON."""
+    if isinstance(o, (dt.date, dt.datetime)):
+        return o.isoformat()
+    raise TypeError(f"Object of type {o.__class__.__name__} is not JSON serializable")
+
+
 def dumps(obj: Any) -> str:
-    return json.dumps(obj, indent=2, sort_keys=True, ensure_ascii=False) + "\n"
+    return json.dumps(obj, indent=2, sort_keys=True, ensure_ascii=False, default=_json_default) + "\n"
 
 
 def write_atomic(path: Path, text: str, mode: int = 0o644) -> None:
