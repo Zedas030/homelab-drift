@@ -1,4 +1,10 @@
-# Homelab-Drift
+<p align="center">
+  <img src="docs/assets/banner.svg" alt="Homelab-Drift" width="100%">
+</p>
+
+<p align="center">
+  <a href="#what-it-does">What it does</a>&nbsp;&nbsp;·&nbsp;&nbsp;<a href="#security-read-only-by-design">Security</a>&nbsp;&nbsp;·&nbsp;&nbsp;<a href="#installation">Install</a>&nbsp;&nbsp;·&nbsp;&nbsp;<a href="#secrets">Secrets</a>&nbsp;&nbsp;·&nbsp;&nbsp;<a href="#configuration-reference">Configuration</a>
+</p>
 
 **Documentation of your homelab, generated from the real system state - and an alert when reality drifts away from it.**
 
